@@ -1,0 +1,11 @@
+{  
+   "results":[  
+
+   ],
+   "success":false,
+   "error":{  
+      "code":400,
+      "message":"No support for regions outside the United States. Check that user_latitude and user_longitude are set correctly"
+   },
+   "request_id":"0cea31cc-f06b-4421-b2c4-fad71fae7dba"
+}

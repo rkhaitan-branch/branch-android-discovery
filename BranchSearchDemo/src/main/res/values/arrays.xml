@@ -1,0 +1,23 @@
+<resources>
+
+    <string-array name="mockLocationArray">
+        <item>\nCustom\n</item>
+        <item>Las Vegas, NV</item>
+        <item>Lebanon, KS</item>
+        <item>New York, NY</item>
+        <item>Orlando, FL</item>
+        <item>San Francisco, CA</item>
+        <item>Seattle, WA</item>
+    </string-array>
+
+    <string-array name="mockLocationValues">
+        <item></item>
+        <item>36.095553, -115.176055</item>
+        <item>39.828818, -98.579564</item>
+        <item>40.735165, -73.988166</item>
+        <item>28.385333, -81.563880</item>
+        <item>37.7749295, -122.4194155</item>
+        <item>47.612354, -122.345741</item>
+    </string-array>
+
+</resources>

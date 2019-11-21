@@ -1,0 +1,18 @@
+<resources>
+    <!-- Standard definitions for match_parent and wrap_content -->
+    <item name="match_parent" format="integer" type="dimen">-1</item>
+    <item name="wrap_content" format="integer" type="dimen">-2</item>
+
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="card_height">@dimen/wrap_content</dimen>
+    <dimen name="gradient_border_width">7dp</dimen>
+    <dimen name="gradient_corner_radius">5dp</dimen>
+    <dimen name="appIconHeight">48dp</dimen>
+    <dimen name="appNameHeight">30dp</dimen>
+    <dimen name="appNameWidth">85dp</dimen>
+    <dimen name="app_label_txt_size">12sp</dimen>
+    <dimen name="content_icon_size">90dp</dimen>
+
+</resources>

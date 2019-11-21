@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="scroll_anim_delay">700</integer>
+    <!-- Version code for the Branch service embedded with this build-->
+    <integer name="branch_service_version_code">2</integer>
+</resources>

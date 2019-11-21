@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg_start">#FF7A67EE</color>
+    <color name="bg_end">#FF7A67FE</color>
+    <color name="bf_text_white">#CDFAFAEF</color>
+    <color name="bf_text_off_white">#FBFBFBFB</color>
+    <color name="bf_text_bg_white">#FFFEFEFE</color>
+    <color name="bf_text_grey">#AB787878</color>
+    <color name="bf_text_light_blue">#FF7AAAEE</color>
+    <color name="bf_text_darker_grey">#FF787878</color>
+    <color name="bf_translucent">#773A3A3A</color>
+    <color name="bf_white_bg">#FFEAEAEA</color>
+    <color name="bf_black_bg">#FF232323</color>
+    <color name="bf_solid_blue">#FF7A67EE</color>
+    <color name="bf_rating_bar">#EFFBFB00</color>
+    <color name="bf_search_item_bg">#FEFAFAEF</color>
+
+    <color name="search_item_solid_bg"> #00FEFEFE</color>
+    <color name="search_item_top"> #77FFFFFF</color>
+    <color name="search_item_bottom"> #77000000</color>
+
+
+    <color name="feed_item_cell_color">#2EFFFFFF</color>
+    <color name="content_title_color">#FFFFFFFF</color>
+    <color name="content_desc_color">#FFE3E8ED</color>
+
+
+    <color name="main_bg_start">#FF007EA8</color>
+    <color name="main_bg_end">#FF011C5C</color>
+    <color name="lightBlue">#FF64a2f6</color>
+</resources>

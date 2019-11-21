@@ -1,0 +1,29 @@
+{  
+   "success":true,
+   "request_id":"4d65c2ba-d88a-4356-a157-7ed04676b28e",
+   "results":[  
+      {  
+         "app_icon_url":"http://lh4.ggpht.com/F0F4Z965uf3psiHu5h77e-8o-Yla68BEaJI8xLfK-V3JkMK4yQv1WLqqZQCwYhDevKoa",
+         "app_store_id":"com.yelp.android",
+         "score":0.1441965701139767,
+         "app_search_deep_link":{  
+            "name":null,
+            "uri_scheme":null,
+            "score":1.001,
+            "metadata":{  
+
+            },
+            "entity_id":8741903,
+            "web_link":"https://yelp.to/a/key_live_cgf22Tbs1bynw5NsRXmyqhpexycE0FFF?$uri_redirect_mode=1&feature=branch_search&$fallback_url=https%3A%2F%2Fwww.yelp.com%2Fsearch%3Ffind_desc%3Dmexican&$ios_url=https%3A%2F%2Fwww.yelp.com%2Fsearch%3Ffind_desc%3Dmexican&$android_url=https%3A%2F%2Fwww.yelp.com%2Fsearch%3Ffind_desc%3Dmexican",
+            "description":null,
+            "type":"SearchQuery",
+            "image_url":null,
+            "routing_mode":"5"
+         },
+         "app_name":"Yelp",
+         "deep_links":[  
+         ]
+      }
+   ],
+   "debug_info":""
+}

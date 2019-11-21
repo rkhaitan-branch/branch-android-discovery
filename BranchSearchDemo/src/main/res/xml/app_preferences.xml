@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="@string/pref_header_general">
+        <EditTextPreference
+            android:key="branch_key"
+            android:title="@string/pref_custom_key_title"
+            android:summary="@string/pref_custom_key" >
+        </EditTextPreference>
+
+        <EditTextPreference
+            android:key="branch_url"
+            android:title="@string/pref_custom_url_title"
+            android:summary="@string/pref_custom_url" >
+        </EditTextPreference>
+
+        <EditTextPreference
+            android:key="branch_intent_flags"
+            android:title="@string/pref_custom_flags_title"
+            android:summary="@string/pref_custom_flags"
+            android:inputType="numberDecimal"
+            android:digits="0123456789">
+        </EditTextPreference>
+
+        <Preference
+            android:key="branch_init"
+            android:title="@string/pref_init_branch_title"
+            android:summary="@string/pref_init_branch">
+        </Preference>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory >
+        <SwitchPreference
+            android:key="branch_use_mock_location"
+            android:title="@string/pref_use_mock_location" >
+        </SwitchPreference>
+
+        <EditTextPreference
+            android:key="branch_mock_location"
+            android:title="@string/pref_mock_location_title"
+            android:summary="@string/pref_mock_location" >
+        </EditTextPreference>
+        <ListPreference
+            android:key="branch_mock_location_list"
+            android:title="@string/pref_mock_location_list_title"
+            android:entries="@array/mockLocationArray"
+            android:entryValues="@array/mockLocationValues" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

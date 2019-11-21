@@ -1,0 +1,73 @@
+<RelativeLayout
+    android:id="@+id/root_view"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:focusableInTouchMode="true">
+
+    <RelativeLayout
+        android:id="@+id/blur_bg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:background="@drawable/gradient_bg"
+        android:clickable="true"
+        android:focusableInTouchMode="true"
+        tools:context=".HomeActivity">
+
+        <io.branch.search.demo.util.BFSearchBox
+            android:id="@+id/search_txt"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="10dp"
+            android:background="@android:color/transparent"
+            android:gravity="left|center"
+            android:hint="@string/search_hint"
+            android:imeOptions="actionDone"
+            android:padding="10dp"
+            android:textColor="#FF000000"
+            android:textColorHint="@color/bf_text_grey"
+            android:textAppearance="@android:style/TextAppearance.Large"
+            android:visibility="visible"/>
+
+        <io.branch.search.demo.util.BranchSearchController
+            android:id="@+id/recommendation_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/search_txt"
+            android:background="@null"/>
+
+        <!-- Empty view is only visible when the list has no items. -->
+        <TextView
+            android:id="@android:id/empty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/no_results"
+            android:textColor="@android:color/white"
+            android:textAppearance="?android:textAppearanceLarge"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/version_name_txt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:background="@android:color/transparent"
+            android:text="@string/app_version"
+            android:textAppearance="@android:style/TextAppearance.Small"
+            android:textColor="@color/bf_text_white"
+            android:clickable="true" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

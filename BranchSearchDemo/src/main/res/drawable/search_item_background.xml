@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:top="@dimen/gradient_border_width" android:bottom="@dimen/gradient_border_width">
+        <shape>
+            <solid android:color="@color/search_item_solid_bg" />
+        </shape>
+    </item>
+
+    <item
+        android:gravity="top"
+        android:height="@dimen/gradient_border_width"
+        android:left="0dp" android:right="0dp">
+        <shape>
+            <corners android:topLeftRadius="@dimen/gradient_corner_radius" android:topRightRadius="@dimen/gradient_corner_radius"/>
+            <gradient android:startColor="@color/search_item_solid_bg" android:endColor="@color/search_item_top"  android:type="linear" android:angle="90"  />
+        </shape>
+    </item>
+
+    <item
+        android:height="@dimen/gradient_border_width"
+        android:gravity="bottom"
+        android:left="0dp" android:right="0dp">
+        <shape>
+            <corners android:bottomLeftRadius="@dimen/gradient_corner_radius" android:bottomRightRadius="@dimen/gradient_corner_radius"/>
+            <gradient android:startColor="@color/search_item_solid_bg" android:endColor="@color/search_item_bottom"  android:type="linear" android:angle="270" />
+        </shape>
+    </item>
+
+</layer-list>

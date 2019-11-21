@@ -1,0 +1,49 @@
+<resources>
+    <string name="app_name">Branch Search Demo</string>
+    <string name="app_version">v1.0</string>
+    <string name="search_hint">What are you looking for?</string>
+    <string name="searching_txt">Loading..</string>
+    <string name="local_apps">Applications</string>
+    <string name="relevant_content">Relevant Content</string>
+    <string name="installed_apps_title">Installed Apps</string>
+    <string name="non_installed_apps_title">Available on the Play Store</string>
+    <string name="app_related_title">Related Apps</string>
+    <string name="app_more">MORE</string>
+    <string name="app_search_title">APPS</string>
+
+    <string name="permission_rationale">Permission request</string>
+    <string name="sdk_not_initialized">The Branch SDK could not be initialized!  Please check to make sure your keys are correct in the manifest.</string>
+
+    <!--  Service usage permission messages  -->
+    <string name="update_progress_msg">Updating app contents. Please wait</string>
+
+    <!-- App usage enable message -->
+    <string name="usage_enable_msg">Enable contextual app recommendations\nby giving Branch Search Service access to your on-device usage information. This information will not be shared or send to any servers.\nYES</string>
+    <string name="more_app_txt">MORE</string>
+    <string name="less_app_txt">LESS</string>
+
+    <string name="review_count">%1$d Ratings</string>
+    <string name="no_results">No Results</string>
+
+    <!-- Preferences -->
+    <string name="pref_header_general">Override Defaults</string>
+    <string name="pref_default">Default</string>
+
+    <string name="pref_custom_key">Input your Branch Key</string>
+    <string name="pref_custom_key_title">Branch Key</string>
+
+    <string name="pref_custom_url">Input your custom URL</string>
+    <string name="pref_custom_url_title">Branch Url</string>
+
+    <string name="pref_custom_flags">Input your custom Intent flags</string>
+    <string name="pref_custom_flags_title">Custom Intent Flags</string>
+
+    <string name="pref_init_branch">Click to re-initialize Branch with a custom configuration</string>
+    <string name="pref_init_branch_title">Re-Initialize Branch</string>
+
+    <string name="pref_use_mock_location">Force Location</string>
+    <string name="pref_mock_location_list_title">Locations</string>
+    <string name="pref_mock_location">Enter a custom location</string>
+    <string name="pref_mock_location_title">Custom Location</string>
+
+</resources>
