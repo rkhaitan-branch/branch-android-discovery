@@ -1,4 +1,9 @@
 # Branch Android SDK change log
+- v1.3.8
+  * _*Master Release*_ - November 22, 2019
+  * Include limit ad tracking flag on server requests
+  * Include click tracking for QueryHint and AutoSuggest results
+
 - v1.3.7
   * _*Master Release*_ - October 16, 2019
   * Modified kill switch behavior
