@@ -3,7 +3,7 @@
 
 # Branch Search SDK
 
-The Branch Search SDK is an Android SDK provided by [Branch](https://branch.io) to power universal app search functionality. This SDK is a thin wrapper with helper classes to assist in building search user experiences on top of the Branch Search API. This SDK and API allow your users to search through the tens of billions of deep links to app pages that Branch has indexed from its core linking platform used by tens of thousands of mobile applications & websites.
+The Branch Discovery SDK is an Android SDK provided by [Branch](https://branch.io) to power in-app search on Android devices. This SDK is a thin wrapper with helper classes to assist in building search user experiences on top of the Branch Discovery API. This SDK and API allow your users to search through the tens of billions of deep links to app pages that Branch has indexed from its core linking platform used by tens of thousands of mobile applications & websites.
 
 ![search example](http://neilbranch.github.io/imgs/demo_20191019.gif)
 
@@ -13,9 +13,9 @@ ___
 
 ## Installation
 
-The compiled Branch Search SDK footprint is approximately **40kb**
+The compiled Branch Discovery SDK footprint is approximately **40kb**
 
-### Install Branch Search SDK
+### Install Branch Discovery SDK
 
 Add `implementation 'io.branch.sdk.android:search:1.x.y'` to the dependencies section of your `build.gradle` file, where `x` and `y` correspond to the latest release version.
 
@@ -55,11 +55,11 @@ Once you receive your Branch Discovery API Key, edit your app's manifest file to
 </manifest>
 ```
 
-# Integrating Branch Search SDK
+# Integrating Branch Discovery SDK
 
 ## Initialization
 
-The Branch Search SDK needs to be initialized before using any search functionality. The SDK can be initialized anywhere within your application. Ideally should be from the `onCreate()` method of the application class.  Alternatively it can be initialized from the `onCreate()` method of the Activity, however subsequent calls to `init()` will not reinitialize the SDK.
+The Branch Discovery SDK needs to be initialized before using any search functionality. The SDK can be initialized anywhere within your application. Ideally should be from the `onCreate()` method of the application class.  Alternatively it can be initialized from the `onCreate()` method of the Activity, however subsequent calls to `init()` will not reinitialize the SDK.
 
 ```java
      BranchSearch.init(getApplicationContext());
@@ -125,7 +125,7 @@ As a user is typing, Auto Suggest (sometimes referred to as autocomplete) will r
 
 When a user begins typing into your search box, you should create a `BranchSearchRequest` to search for apps and content with Branch. Create a builder for each phrase you would like to search for. Don't worry, we handle debounce so feel free to create one with every character entered.
 
-**Note** that the Branch Search SDK will provide better results if it can use the current location. For example, a user searching for a restaurant will receive location specific results if location permissions are enabled. Be sure to add the last known location to the BranchSearchRequest via `setLocation()` or both `setLatitude()` and `setLongitude()`. For your reference, in `io.branch.search.demo.util.BranchLocationFinder`, 
+**Note** that the Branch Discovery SDK will provide better results if it can use the current location. For example, a user searching for a restaurant will receive location specific results if location permissions are enabled. Be sure to add the last known location to the BranchSearchRequest via `setLocation()` or both `setLatitude()` and `setLongitude()`. For your reference, in `io.branch.search.demo.util.BranchLocationFinder`, 
 we have provided example code that fetches the device's last known location. 
 
 ```java
