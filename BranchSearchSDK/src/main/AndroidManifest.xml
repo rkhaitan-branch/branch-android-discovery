@@ -1,2 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="io.branch.search" />
+    package="io.branch.search">
+    <application>
+        <activity android:name=".BranchDeepViewActivity"/>
+    </application>
+</manifest>
