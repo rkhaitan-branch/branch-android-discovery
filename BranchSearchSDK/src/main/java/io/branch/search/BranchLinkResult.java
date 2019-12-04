@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import org.json.JSONException;
@@ -117,6 +119,23 @@ public class BranchLinkResult implements Parcelable {
                     .getNetworkHandler(BranchSearch.Channel.SEARCH)
                     .executeGet(click_tracking_url, null);
         }
+    }
+
+    /**
+     * Opens the link into a <a href="https://branch.io/deepviews/">Branch Deepview</a>.
+     * The content preview will be rendered inside a in-app web view with the option to
+     * download the app from the play store.
+     *
+     * @param context a context
+     * @return an error if the deep view could not be opened
+     */
+    @Nullable
+    public BranchSearchError openDeepView(@NonNull Context context) {
+        // NOTE: We never return an error, but we might in a future implementation.
+        // This also is consistent with openContent(Context, boolean).
+        Intent intent = BranchDeepViewActivity.getIntent(context, this);
+        context.startActivity(intent);
+        return null;
     }
 
     /**
