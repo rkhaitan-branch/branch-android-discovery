@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.AppCompatRatingBar;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -168,6 +169,8 @@ public class ContentItem extends LinearLayout implements View.OnClickListener {
         if (result instanceof BranchLinkResult) {
             BranchLinkResult linkResult = (BranchLinkResult)result;
             linkResult.openContent(getContext(), true);
+            // Quick test for deepviews:
+            // linkResult.openDeepView(((FragmentActivity) getContext()).getSupportFragmentManager());
         } else {
             // Load app header
             BranchAppResult appResult = (BranchAppResult)result;

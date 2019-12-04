@@ -7,6 +7,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
 
 import org.json.JSONException;
@@ -126,15 +127,15 @@ public class BranchLinkResult implements Parcelable {
      * The content preview will be rendered inside a in-app web view with the option to
      * download the app from the play store.
      *
-     * @param context a context
+     * @param manager a fragment manager
      * @return an error if the deep view could not be opened
      */
     @Nullable
-    public BranchSearchError openDeepView(@NonNull Context context) {
+    public BranchSearchError openDeepView(@NonNull FragmentManager manager) {
         // NOTE: We never return an error, but we might in a future implementation.
         // This also is consistent with openContent(Context, boolean).
-        Intent intent = BranchDeepViewActivity.getIntent(context, this);
-        context.startActivity(intent);
+        BranchDeepViewFragment fragment = BranchDeepViewFragment.getInstance(this);
+        fragment.show(manager, BranchDeepViewFragment.class.getSimpleName());
         return null;
     }
 
