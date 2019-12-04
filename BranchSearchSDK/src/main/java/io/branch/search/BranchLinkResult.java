@@ -132,10 +132,12 @@ public class BranchLinkResult implements Parcelable {
      */
     @Nullable
     public BranchSearchError openDeepView(@NonNull FragmentManager manager) {
+        registerClickEvent();
+
         // NOTE: We never return an error, but we might in a future implementation.
         // This also is consistent with openContent(Context, boolean).
         BranchDeepViewFragment fragment = BranchDeepViewFragment.getInstance(this);
-        fragment.show(manager, BranchDeepViewFragment.class.getSimpleName());
+        fragment.show(manager, BranchDeepViewFragment.TAG);
         return null;
     }
 

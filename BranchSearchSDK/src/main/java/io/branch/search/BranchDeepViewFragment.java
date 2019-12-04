@@ -18,6 +18,8 @@ import android.webkit.WebViewClient;
  */
 public class BranchDeepViewFragment extends DialogFragment {
 
+    public static final String TAG = BranchDeepViewFragment.class.getSimpleName();
+
     private static final String KEY_DESTINATION = "destination";
 
     // CTA keys are required as a temporary workaround for overriding the CTA button behavior
