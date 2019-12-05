@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 
@@ -143,6 +144,7 @@ class Util {
      * @param key Key
      * @return the value for the given key, or the Empty String if not found.
      */
+    @NonNull
     static String optString(JSONObject json, String key) {
         // http://code.google.com/p/android/issues/detail?id=13830
         if (json.isNull(key))

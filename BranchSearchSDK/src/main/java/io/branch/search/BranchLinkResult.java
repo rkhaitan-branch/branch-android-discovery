@@ -34,6 +34,7 @@ public class BranchLinkResult implements Parcelable {
     private String name;
     private String description;
     private String image_url;
+    private String app_name;
     private String app_icon_url;
     private String ranking_hint;
     private JSONObject metadata;
@@ -63,6 +64,10 @@ public class BranchLinkResult implements Parcelable {
 
     public String getImageUrl() {
         return image_url;
+    }
+
+    public String getAppName() {
+        return app_name;
     }
 
     public String getAppIconUrl() {
@@ -224,7 +229,11 @@ public class BranchLinkResult implements Parcelable {
         return isAppOpened;
     }
 
-    static BranchLinkResult createFromJson(JSONObject actionJson, String app_store_id, String icon_url) {
+    @NonNull
+    static BranchLinkResult createFromJson(@NonNull JSONObject actionJson,
+                                           @NonNull String appName,
+                                           @NonNull String appStoreId,
+                                           @NonNull String appIconUrl) {
         BranchLinkResult link = new BranchLinkResult();
         link.entity_id = Util.optString(actionJson, LINK_ENTITY_ID_KEY);
         link.type = Util.optString(actionJson, LINK_TYPE_KEY);
@@ -233,14 +242,15 @@ public class BranchLinkResult implements Parcelable {
         link.name = Util.optString(actionJson, LINK_NAME_KEY);
         link.description = Util.optString(actionJson, LINK_DESC_KEY);
         link.image_url = Util.optString(actionJson, LINK_IMAGE_URL_KEY);
-        link.app_icon_url = icon_url;
+        link.app_name = appName;
+        link.app_icon_url = appIconUrl;
         link.ranking_hint = Util.optString(actionJson, LINK_RANKING_HINT_KEY);
         link.metadata = actionJson.optJSONObject(LINK_METADATA_KEY);
 
         link.routing_mode = Util.optString(actionJson, LINK_ROUTING_MODE_KEY);
         link.uri_scheme = Util.optString(actionJson, LINK_URI_SCHEME_KEY);
         link.web_link = Util.optString(actionJson, LINK_WEB_LINK_KEY);
-        link.destination_store_id = app_store_id;
+        link.destination_store_id = appStoreId;
 
         link.click_tracking_url = Util.optString(actionJson, LINK_TRACKING_KEY);
 
@@ -261,6 +271,7 @@ public class BranchLinkResult implements Parcelable {
         dest.writeString(this.name);
         dest.writeString(this.description);
         dest.writeString(this.image_url);
+        dest.writeString(this.app_name);
         dest.writeString(this.app_icon_url);
         dest.writeString(this.ranking_hint);
         dest.writeString(this.metadata.toString());
@@ -281,6 +292,7 @@ public class BranchLinkResult implements Parcelable {
         this.name = in.readString();
         this.description = in.readString();
         this.image_url = in.readString();
+        this.app_name = in.readString();
         this.app_icon_url = in.readString();
         try {
             this.metadata = new JSONObject(in.readString());
