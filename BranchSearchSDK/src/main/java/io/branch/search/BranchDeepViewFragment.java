@@ -1,12 +1,15 @@
 package io.branch.search;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.text.TextUtils;
+import android.util.TypedValue;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,6 +53,22 @@ public class BranchDeepViewFragment extends DialogFragment {
     }
 
     private WebView mWebView;
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        // We want to have all the default attributes based on the current runtime Context,
+        // but override a few ones that are defined in the R.style.BranchDeepViewFragment.
+        // This is how the Dialog class finds a good theme:
+        Context context = getContext();
+        final TypedValue value = new TypedValue();
+        context.getTheme().resolveAttribute(android.R.attr.dialogTheme, value, true);
+        context = new ContextThemeWrapper(context, value.resourceId);
+        // Now wrap it with our style:
+        context = new ContextThemeWrapper(context, R.style.BranchDeepViewFragment);
+        // Finally create the dialog:
+        return new Dialog(context, 0);
+    }
 
     @Nullable
     @Override
