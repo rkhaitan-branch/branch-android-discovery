@@ -29,7 +29,7 @@ public class BranchDeepViewFragment extends DialogFragment {
                 .appendQueryParameter("og_description", result.getDescription())
                 .appendQueryParameter("og_image_url", result.getImageUrl())
                 .appendQueryParameter("cta_url", ctaUrl)
-                // .appendQueryParameter("app_name", result.ge)
+                .appendQueryParameter("app_name", result.getAppName())
                 .appendQueryParameter("app_image_url", result.getAppIconUrl())
                 .build();
         return getInstance(destination);
