@@ -2,6 +2,7 @@ package io.branch.search;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 /**
  * A dialog that hosts a WebView where we can show deepviews.
@@ -93,6 +95,19 @@ public class BranchDeepViewFragment extends DialogFragment {
         Uri uri;
         if (args != null && (uri = args.getParcelable(KEY_DESTINATION)) != null) {
             mWebView.loadUrl(uri.toString());
+            mWebView.setWebViewClient(new WebViewClient() {
+                @Override
+                public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                    // Special check for "close" button, in case one is present.
+                    if (url.equals("http://close") || url.equals("http://close/")) {
+                        dismiss();
+                    } else {
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                        startActivity(intent);
+                    }
+                    return true;
+                }
+            });
         } else {
             throw new IllegalStateException("No destination!");
         }
