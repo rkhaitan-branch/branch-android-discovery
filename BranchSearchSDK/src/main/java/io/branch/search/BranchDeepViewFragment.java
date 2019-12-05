@@ -1,10 +1,12 @@
 package io.branch.search;
 
+import android.app.Dialog;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,12 +24,15 @@ public class BranchDeepViewFragment extends DialogFragment {
     public static BranchDeepViewFragment getInstance(@NonNull BranchLinkResult result) {
         String ctaUrl = "https://play.google.com/store/apps/details?id="
                 + result.getDestinationPackageName();
+        String imageUrl = !TextUtils.isEmpty(result.getImageUrl().trim())
+                ? result.getImageUrl().trim()
+                : result.getAppIconUrl().trim();
         Uri destination = Uri.parse("https://littlewhip.app.link")
                 .buildUpon()
                 .appendPath("deepview")
                 .appendQueryParameter("og_title", result.getName())
                 .appendQueryParameter("og_description", result.getDescription())
-                .appendQueryParameter("og_image_url", result.getImageUrl())
+                .appendQueryParameter("og_image_url", imageUrl)
                 .appendQueryParameter("cta_url", ctaUrl)
                 .appendQueryParameter("app_name", result.getAppName())
                 .appendQueryParameter("app_image_url", result.getAppIconUrl())

@@ -168,9 +168,9 @@ public class ContentItem extends LinearLayout implements View.OnClickListener {
         Object result = v.getTag();
         if (result instanceof BranchLinkResult) {
             BranchLinkResult linkResult = (BranchLinkResult)result;
-            linkResult.openContent(getContext(), true);
+            // linkResult.openContent(getContext(), true);
             // Quick test for deepviews:
-            // linkResult.openDeepView(((FragmentActivity) getContext()).getSupportFragmentManager());
+            linkResult.openDeepView(((FragmentActivity) getContext()).getSupportFragmentManager());
         } else {
             // Load app header
             BranchAppResult appResult = (BranchAppResult)result;
