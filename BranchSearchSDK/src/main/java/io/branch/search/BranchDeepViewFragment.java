@@ -18,40 +18,30 @@ import android.webkit.WebViewClient;
  */
 public class BranchDeepViewFragment extends DialogFragment {
 
-    public static final String TAG = BranchDeepViewFragment.class.getSimpleName();
-
     private static final String KEY_DESTINATION = "destination";
-
-    // CTA keys are required as a temporary workaround for overriding the CTA button behavior
-    // in our template, so that it directs to the correct url.
-    private static final String KEY_CTA_URL = "cta_url";
-    private static final String KEY_CTA_REPLACEMENT = "cta_replacement";
 
     @NonNull
     public static BranchDeepViewFragment getInstance(@NonNull BranchLinkResult result) {
-        String cta = "https://play.google.com/store/apps/details?id="
+        String ctaUrl = "https://play.google.com/store/apps/details?id="
                 + result.getDestinationPackageName();
-        Uri destination = Uri.parse("https://nma.app.link")
+        Uri destination = Uri.parse("https://littlewhip.app.link")
                 .buildUpon()
-                .appendPath("disco")
-                .appendQueryParameter("$og_title", result.getName())
-                .appendQueryParameter("$og_description", result.getDescription())
-                .appendQueryParameter("$og_image_url", result.getImageUrl())
+                .appendPath("deepview")
+                .appendQueryParameter("og_title", result.getName())
+                .appendQueryParameter("og_description", result.getDescription())
+                .appendQueryParameter("og_image_url", result.getImageUrl())
+                .appendQueryParameter("cta_url", ctaUrl)
+                // .appendQueryParameter("app_name", result.ge)
+                .appendQueryParameter("app_image_url", result.getAppIconUrl())
                 .build();
-        return getInstance(destination,
-                Uri.parse("https://branch.io/"),
-                Uri.parse(cta));
+        return getInstance(destination);
     }
 
     @NonNull
-    private static BranchDeepViewFragment getInstance(@NonNull Uri destination,
-                                                      @Nullable Uri ctaUrl,
-                                                      @Nullable Uri ctaReplacement) {
+    private static BranchDeepViewFragment getInstance(@NonNull Uri destination) {
         BranchDeepViewFragment fragment = new BranchDeepViewFragment();
         Bundle args = new Bundle();
         args.putParcelable(KEY_DESTINATION, destination);
-        args.putParcelable(KEY_CTA_URL, ctaUrl);
-        args.putParcelable(KEY_CTA_REPLACEMENT, ctaReplacement);
         fragment.setArguments(args);
         return fragment;
     }
@@ -80,20 +70,6 @@ public class BranchDeepViewFragment extends DialogFragment {
         Bundle args = getArguments();
         Uri uri;
         if (args != null && (uri = args.getParcelable(KEY_DESTINATION)) != null) {
-            final Uri ctaUrl = args.getParcelable(KEY_CTA_URL);
-            final Uri ctaReplacement = args.getParcelable(KEY_CTA_REPLACEMENT);
-            mWebView.setWebViewClient(new WebViewClient() {
-                @Override
-                public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                    Uri uri = Uri.parse(url);
-                    if (uri.equals(ctaUrl)) {
-                        uri = ctaReplacement;
-                    }
-                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                    startActivity(intent);
-                    return true;
-                }
-            });
             mWebView.loadUrl(uri.toString());
         } else {
             throw new IllegalStateException("No destination!");
