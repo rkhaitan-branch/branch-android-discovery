@@ -143,7 +143,6 @@ public class BranchLinkResult implements Parcelable {
         // NOTE: We never return an error, but we might in a future implementation.
         // This also is consistent with openContent(Context, boolean).
         BranchDeepViewFragment fragment = BranchDeepViewFragment.getInstance(this);
-        fragment.setCancelable(true);
         fragment.show(manager, "BranchDeepViewFragment");
         return null;
     }
