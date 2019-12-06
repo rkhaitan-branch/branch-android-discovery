@@ -32,9 +32,10 @@ public class BranchDeepViewFragment extends DialogFragment {
         String imageUrl = !TextUtils.isEmpty(result.getImageUrl().trim())
                 ? result.getImageUrl().trim()
                 : result.getAppIconUrl().trim();
-        Uri destination = Uri.parse("https://littlewhip.app.link")
+        String key = BranchSearch.getInstance().getBranchConfiguration().getBranchKey();
+        Uri destination = Uri.parse("https://search.app.link")
                 .buildUpon()
-                .appendPath("deepview")
+                .appendPath("deepview-" + key)
                 .appendQueryParameter("og_title", result.getName())
                 .appendQueryParameter("og_description", result.getDescription())
                 .appendQueryParameter("og_image_url", imageUrl)
@@ -51,6 +52,7 @@ public class BranchDeepViewFragment extends DialogFragment {
         Bundle args = new Bundle();
         args.putParcelable(KEY_DESTINATION, destination);
         fragment.setArguments(args);
+        fragment.setCancelable(true);
         return fragment;
     }
 
@@ -101,11 +103,14 @@ public class BranchDeepViewFragment extends DialogFragment {
                     // Special check for "close" button, in case one is present.
                     if (url.equals("http://close") || url.equals("http://close/")) {
                         dismiss();
-                    } else {
+                        return true;
+                    } else if (url.contains("play.google.com")) {
                         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                         startActivity(intent);
+                        return true;
+                    } else {
+                        return false;
                     }
-                    return true;
                 }
             });
         } else {
