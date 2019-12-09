@@ -221,7 +221,7 @@ Branch will return to you a list of relevants apps for each query, similar to if
 | | | |
 | openSearchDeepLink(Context, Boolean fallbackToPlayStore) | BranchSearchError | The method to trigger when a user clicks on the header. This will attempt to trigger the search deep link to continue the user query in the app. Some apps dox not support this, and the fallback will trigger openApp. |
 | isSearchDeepLinkAvailable() | boolean | This method will return true if the search deep link is available. This can be used to change the UI based on its presence. |
-| openApp(Context, Boolean fallbackToPlayStore) | BranchSearchError | If you just want to open the app without searching, use this method. Specify as argument whether you want the user to go to the Play Store when app is not installed |
+| openApp(Context, boolean fallbackToPlayStore) | BranchSearchError | If you just want to open the app without searching, use this method. Specify as argument whether you want the user to go to the Play Store when app is not installed |
 
 
 #### BranchLinkResult class
@@ -234,8 +234,9 @@ Branch will also return relevant content to the user query. These are deep links
 | getDescription | String | Gets the description of the content for display |
 | getImageUrl | String | Gets the URL of the content image for display |
 | | | |
-| openContent(Context, Boolean fallbackToPlayStore) | BranchSearchError | Branch is great at deep link routing, so we wanted to abstract away this complexity from you. When a user taps on an action, you simply need to call `completeAction()` to trigger the user to be routed to the content or website. |
-| registerClickEvent() | none | If you decide to handle routing on your own with the URI scheme / web link included in the link result, please call this method when the user taps. _This is not required if you use openContent_ |
+| openContent(Context, boolean fallbackToPlayStore) | BranchSearchError | Branch is great at deep link routing, so we wanted to abstract away this complexity from you. When a user taps on an action, you simply need to call `completeAction()` to trigger the user to be routed to the content or website. |
+| openDeepView(FragmentManager) | BranchSearchError | Opens the link into a [Branch Deepview](https://branch.io/deepviews/). The content preview will be rendered inside a in-app web view with the option to download the app from the play store. |
+| registerClickEvent() | none | If you decide to handle routing on your own with the URI scheme / web link included in the link result, please call this method when the user taps. _This is not required if you use openContent or openDeepView_ |
 
 
 ## Handling errors with `BranchSearchError`

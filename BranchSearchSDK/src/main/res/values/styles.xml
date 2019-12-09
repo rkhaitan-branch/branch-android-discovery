@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Theme for BranchDeepViewFragment. The only valid parent for this theme would be
+         "android:Theme.Dialog" but it has a very outdated appearance. For this reason
+         we declare no parent and in BranchDeepViewFragment, we get a dialog theme from the
+         runtime Context. Then we wrap that theme with the style below. -->
+    <style name="BranchDeepViewFragment">
+        <item name="android:windowMinWidthMajor">85%</item>
+        <item name="android:windowMinWidthMinor">85%</item>
+    </style>
+</resources>

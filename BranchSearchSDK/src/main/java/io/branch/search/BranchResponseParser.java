@@ -61,17 +61,20 @@ class BranchResponseParser {
                     if (rawDeepLinks != null) {
 
                         for (int j = 0; j < rawDeepLinks.length(); j++) {
-                            BranchLinkResult link = BranchLinkResult.createFromJson(rawDeepLinks.optJSONObject(j), store_id, icon_url);
+                            BranchLinkResult link = BranchLinkResult.createFromJson(
+                                    rawDeepLinks.optJSONObject(j), name, store_id, icon_url);
                             deepLinks.add(link);
                         }
                     }
 
                     BranchLinkResult link = null;
                     if (app_search_link != null) {
-                        link = BranchLinkResult.createFromJson(app_search_link, store_id, icon_url);
+                        link = BranchLinkResult.createFromJson(app_search_link, name, store_id,
+                                icon_url);
                     }
 
-                    BranchAppResult appResult = new BranchAppResult(store_id, name, icon_url, link, rankingHint, score, deepLinks);
+                    BranchAppResult appResult = new BranchAppResult(store_id, name, icon_url, link,
+                            rankingHint, score, deepLinks);
                     branchSearchResult.results.add(appResult);
                 }
             }
