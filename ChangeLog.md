@@ -1,4 +1,8 @@
 # Branch Android SDK change log
+- v1.4.0
+  * _*Master Release*_ - December 9, 2019
+  * New support to optionally open a BranchLinkResult as a Deepview
+
 - v1.3.8
   * _*Master Release*_ - November 22, 2019
   * Include limit ad tracking flag on server requests
