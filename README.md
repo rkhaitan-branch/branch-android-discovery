@@ -29,6 +29,15 @@ Add `implementation 'io.branch.sdk.android:search:1.x.y'` to the dependencies se
 ```gradle
     implementation 'com.google.android.gms:play-services-location:' + PLAY_SERVICE_VERSION
 ```
+3) (*mandatory*) Google Play services to access advertising IDs. This lets Branch use its network of app usage information to personalize and improve the user experience. To support this, make sure the following is in your build.gradle dependency list:
+
+```gradle
+    implementation 'com.google.android.gms:play-services-ads:' + PLAY_SERVICE_VERSION
+```
+4) (*mandatory*) Add okhttp library to handle network requests
+```gradle
+    implementation 'com.squareup.okhttp3:okhttp:3.12.6'
+```
 
 ### Register Your App
 
