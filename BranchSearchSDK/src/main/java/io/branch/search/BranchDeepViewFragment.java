@@ -29,9 +29,16 @@ public class BranchDeepViewFragment extends DialogFragment {
     public static BranchDeepViewFragment getInstance(@NonNull BranchLinkResult result) {
         String ctaUrl = "https://play.google.com/store/apps/details?id="
                 + result.getDestinationPackageName();
-        String imageUrl = !TextUtils.isEmpty(result.getImageUrl().trim())
-                ? result.getImageUrl().trim()
-                : result.getAppIconUrl().trim();
+        String appUrl = result.getAppIconUrl().trim();
+        String imageUrl = result.getImageUrl().trim();
+        if (TextUtils.isEmpty(imageUrl)) {
+            imageUrl = appUrl;
+        }
+        if (imageUrl.equals(appUrl)) {
+            // Workaround for having bigger images in case the app url is being used
+            // as the full width image url.
+            imageUrl = appUrl.replace("=s90", "");
+        }
         String key = BranchSearch.getInstance().getBranchConfiguration().getBranchKey();
         Uri destination = Uri.parse("https://search.app.link")
                 .buildUpon()
@@ -41,7 +48,7 @@ public class BranchDeepViewFragment extends DialogFragment {
                 .appendQueryParameter("og_image_url", imageUrl)
                 .appendQueryParameter("cta_url", ctaUrl)
                 .appendQueryParameter("app_name", result.getAppName())
-                .appendQueryParameter("app_image_url", result.getAppIconUrl())
+                .appendQueryParameter("app_image_url", appUrl)
                 .build();
         return getInstance(destination);
     }
