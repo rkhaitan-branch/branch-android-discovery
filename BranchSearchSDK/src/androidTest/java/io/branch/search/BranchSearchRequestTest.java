@@ -92,6 +92,23 @@ public class BranchSearchRequestTest {
     }
 
     @Test
+    public void testAddExtra() {
+        BranchSearchRequest request = BranchSearchRequest.Create("Pizza");
+        JSONObject jsonOut = BranchSearchInterface.createPayload(request,
+                new BranchConfiguration());
+
+        // If no extra is present, json should not even have the extra key.
+        Assert.assertFalse(jsonOut.has(BranchDiscoveryRequest.JSONKey.Extra.toString()));
+
+        // If some extra is present, it will be inside a child json object.
+        request.addExtra("theme", "dark");
+        jsonOut = BranchSearchInterface.createPayload(request, new BranchConfiguration());
+        JSONObject extra = jsonOut.optJSONObject(BranchDiscoveryRequest.JSONKey.Extra.toString());
+        Assert.assertNotNull(extra);
+        Assert.assertEquals("dark", extra.optString("theme"));
+    }
+
+    @Test
     public void testOverrideLocale() {
         String testLocale = "xx_YY";
 
