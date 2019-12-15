@@ -95,7 +95,7 @@ public class BranchDiscoveryRequest<T extends BranchDiscoveryRequest> {
      * @param data value
      * @return this BranchDiscoveryRequest
      */
-    public T addExtra(@NonNull String key, @Nullable Object data) {
+    public T setExtra(@NonNull String key, @Nullable Object data) {
         if (data == null) {
             extra_data.remove(key);
         } else {

@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import org.json.JSONException;
@@ -225,7 +224,7 @@ public class BranchConfiguration {
     /**
      * Adds extra data that will be attached to server requests in form
      * of a key-value pair. If request specific values are passed to
-     * {@link BranchDiscoveryRequest#addExtra(String, Object)}, those values
+     * {@link BranchDiscoveryRequest#setExtra(String, Object)}, those values
      * will override the ones specified here with the same key.
      * @param key a key
      * @param data value
