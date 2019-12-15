@@ -38,12 +38,16 @@ class BranchResponseParser {
         // Return if request is not succeeded
         if (object.optBoolean(SUCCESS_KEY)) {
             // Parse results
-            parseResultArray(object.optString(REQUEST_ID_KEY), object.optJSONArray(RESULTS_KEY), branchSearchResult);
+            parseResultArray(object.optString(REQUEST_ID_KEY),
+                    object.optJSONArray(RESULTS_KEY),
+                    branchSearchResult);
         }
         return branchSearchResult;
     }
 
-    private static void parseResultArray(String requestID, JSONArray resultsArray, BranchSearchResult branchSearchResult) {
+    private static void parseResultArray(String requestID,
+                                         JSONArray resultsArray,
+                                         BranchSearchResult branchSearchResult) {
         if (resultsArray != null) {
             for (int i = 0; i < resultsArray.length(); i++) {
 
@@ -62,19 +66,29 @@ class BranchResponseParser {
 
                         for (int j = 0; j < rawDeepLinks.length(); j++) {
                             BranchLinkResult link = BranchLinkResult.createFromJson(
-                                    rawDeepLinks.optJSONObject(j), name, store_id, icon_url);
+                                    rawDeepLinks.optJSONObject(j),
+                                    name,
+                                    store_id,
+                                    icon_url);
                             deepLinks.add(link);
                         }
                     }
 
                     BranchLinkResult link = null;
                     if (app_search_link != null) {
-                        link = BranchLinkResult.createFromJson(app_search_link, name, store_id,
+                        link = BranchLinkResult.createFromJson(app_search_link,
+                                name,
+                                store_id,
                                 icon_url);
                     }
 
-                    BranchAppResult appResult = new BranchAppResult(store_id, name, icon_url, link,
-                            rankingHint, score, deepLinks);
+                    BranchAppResult appResult = new BranchAppResult(store_id,
+                            name,
+                            icon_url,
+                            link,
+                            rankingHint,
+                            score,
+                            deepLinks);
                     branchSearchResult.results.add(appResult);
                 }
             }
