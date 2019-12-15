@@ -2,6 +2,7 @@ package io.branch.search;
 
 import android.location.Location;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -94,8 +95,12 @@ public class BranchDiscoveryRequest<T extends BranchDiscoveryRequest> {
      * @param data value
      * @return this BranchDiscoveryRequest
      */
-    public T addExtra(@NonNull String key, @NonNull Object data) {
-        this.extra_data.put(key, data);
+    public T addExtra(@NonNull String key, @Nullable Object data) {
+        if (data == null) {
+            extra_data.remove(key);
+        } else {
+            extra_data.put(key, data);
+        }
         return (T) this;
     }
 

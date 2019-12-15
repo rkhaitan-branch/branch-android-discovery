@@ -2,10 +2,11 @@ package io.branch.search;
 
 import android.content.Intent;
 import android.support.test.runner.AndroidJUnit4;
+
+import org.json.JSONObject;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import junit.framework.Assert;
 
 /**
  * BranchConfiguration class tests.
@@ -49,5 +50,17 @@ public class BranchConfigurationTest extends BranchTest {
         int flags = Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP;
         config.setLaunchIntentFlags(flags);
         Assert.assertEquals(flags, config.getLaunchIntentFlags());
+    }
+
+    @Test
+    public void testRequestExtras() {
+        BranchConfiguration config = new BranchConfiguration();
+        config.addRequestExtra("foo", "bar");
+        JSONObject object = new JSONObject();
+        config.addConfigurationInfo(object);
+        JSONObject extra = object.optJSONObject(BranchConfiguration.JSONKey.RequestExtra.toString());
+        Assert.assertNotNull(extra);
+        String fooValue = extra.optString("foo");
+        Assert.assertEquals("bar", fooValue);
     }
 }
