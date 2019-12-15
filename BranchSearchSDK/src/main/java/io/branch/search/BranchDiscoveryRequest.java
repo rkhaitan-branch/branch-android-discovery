@@ -19,7 +19,8 @@ public class BranchDiscoveryRequest<T extends BranchDiscoveryRequest> {
         Latitude("user_latitude"),
         Longitude("user_longitude"),
         Timestamp("utc_timestamp"),
-        Extra("extra_data");
+        /** we want to override the configuration-level extras */
+        Extra(BranchConfiguration.JSONKey.RequestExtra.toString());
 
         JSONKey(String key) {
             _key = key;
@@ -40,7 +41,7 @@ public class BranchDiscoveryRequest<T extends BranchDiscoveryRequest> {
     // Longitude for the user
     private double user_longitude;
 
-    private Map<String, Object> extra_data = new HashMap<>();
+    private final Map<String, Object> extra_data = new HashMap<>();
 
     /**
      * Private Constructor.
@@ -86,7 +87,9 @@ public class BranchDiscoveryRequest<T extends BranchDiscoveryRequest> {
 
     /**
      * Adds extra data to be passed to server in forms
-     * of a key-value pair.
+     * of a key-value pair. This value will override any other value for the
+     * same key that was previously set and values that were set at the configuration
+     * level using {@link BranchConfiguration#addRequestExtra(String, Object)}.
      * @param key a key
      * @param data value
      * @return this BranchDiscoveryRequest
@@ -106,8 +109,12 @@ public class BranchDiscoveryRequest<T extends BranchDiscoveryRequest> {
             jsonObject.putOpt(JSONKey.Timestamp.toString(), tsLong);
 
             // Add extra data.
+            // The JSONObject for this key might already exist because the key is shared
+            // between this class and BranchConfiguration.
             if (!extra_data.keySet().isEmpty()) {
-                JSONObject extraData = new JSONObject();
+                JSONObject extraData = jsonObject.optJSONObject(JSONKey.Extra.toString());
+                if (extraData == null) extraData = new JSONObject();
+
                 for (String key : extra_data.keySet()) {
                     Object value = extra_data.get(key);
                     extraData.putOpt(key, value);

@@ -4,12 +4,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Branch Configuration.  Use the Branch Configuration to override default Search options.
@@ -27,6 +30,7 @@ public class BranchConfiguration {
     private Locale locale;      ///< Override BranchDeviceInfo
     private String countryCode;
     private int intentFlags = Intent.FLAG_ACTIVITY_NEW_TASK;
+    private final Map<String, Object> requestExtra = new HashMap<>();
 
     // JSONKeys associated with a Configuration
     enum JSONKey {
@@ -34,6 +38,8 @@ public class BranchConfiguration {
         Country("country"),
         GAID("gaid"),
         LAT("is_lat"),
+        /** matches {@link BranchDiscoveryRequest.JSONKey#Extra} */
+        RequestExtra("extra_data"),
         Locale(BranchDeviceInfo.JSONKey.Locale.toString()); ///< Configuration overrides DeviceInfo
 
         JSONKey(String key) {
@@ -216,6 +222,19 @@ public class BranchConfiguration {
     }
 
     /**
+     * Adds extra data that will be attached to server requests in form
+     * of a key-value pair. If request specific values are passed to
+     * {@link BranchDiscoveryRequest#addExtra(String, Object)}, those values
+     * will override the ones specified here with the same key.
+     * @param key a key
+     * @param data value
+     */
+    @SuppressWarnings("WeakerAccess")
+    public void addRequestExtra(@NonNull String key, @NonNull Object data) {
+        requestExtra.put(key, data);
+    }
+
+    /**
      * Add Configuration Information to a JSON object.
      */
     JSONObject addConfigurationInfo(JSONObject jsonObject) {
@@ -230,6 +249,22 @@ public class BranchConfiguration {
             // Pass the GAID, but also pass the LAT flag.
             jsonObject.putOpt(JSONKey.GAID.toString(), getGoogleAdID());
             jsonObject.putOpt(JSONKey.LAT.toString(), (isAdTrackingLimited() ? 1 : 0));
+
+            // Add extra request data.
+            // The JSONObject for this key might already exist because the key is shared
+            // between this class and BranchDiscoveryRequest.
+            if (!requestExtra.keySet().isEmpty()) {
+                JSONObject extraData = jsonObject.optJSONObject(JSONKey.RequestExtra.toString());
+                if (extraData == null) extraData = new JSONObject();
+
+                for (String key : requestExtra.keySet()) {
+                    Object value = requestExtra.get(key);
+                    if (!extraData.has(key)) {
+                        extraData.putOpt(key, value);
+                    }
+                }
+                jsonObject.putOpt(JSONKey.RequestExtra.toString(), extraData);
+            }
 
         } catch (JSONException ignore) {
         }
