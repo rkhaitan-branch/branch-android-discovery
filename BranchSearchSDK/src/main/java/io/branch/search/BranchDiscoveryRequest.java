@@ -42,7 +42,7 @@ public class BranchDiscoveryRequest<T extends BranchDiscoveryRequest> {
     // Longitude for the user
     private double user_longitude;
 
-    private final Map<String, Object> extra_data = new HashMap<>();
+    private final Map<String, Object> extra = new HashMap<>();
 
     /**
      * Private Constructor.
@@ -99,11 +99,12 @@ public class BranchDiscoveryRequest<T extends BranchDiscoveryRequest> {
      * @param data value
      * @return this BranchDiscoveryRequest
      */
+    @SuppressWarnings("WeakerAccess")
     public T setExtra(@NonNull String key, @Nullable Object data) {
         if (data == null) {
-            extra_data.remove(key);
+            extra.remove(key);
         } else {
-            extra_data.put(key, data);
+            extra.put(key, data);
         }
         return (T) this;
     }
@@ -120,12 +121,12 @@ public class BranchDiscoveryRequest<T extends BranchDiscoveryRequest> {
             // Add extra data.
             // The JSONObject for this key might already exist because the key is shared
             // between this class and BranchConfiguration.
-            if (!extra_data.keySet().isEmpty()) {
+            if (!extra.keySet().isEmpty()) {
                 JSONObject extraData = jsonObject.optJSONObject(JSONKey.Extra.toString());
                 if (extraData == null) extraData = new JSONObject();
 
-                for (String key : extra_data.keySet()) {
-                    Object value = extra_data.get(key);
+                for (String key : extra.keySet()) {
+                    Object value = extra.get(key);
                     extraData.putOpt(key, value);
                 }
                 jsonObject.putOpt(JSONKey.Extra.toString(), extraData);
