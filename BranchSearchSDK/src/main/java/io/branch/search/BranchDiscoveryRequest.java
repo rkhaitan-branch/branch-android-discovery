@@ -87,10 +87,14 @@ public class BranchDiscoveryRequest<T extends BranchDiscoveryRequest> {
     }
 
     /**
-     * Adds extra data to be passed to server in forms
+     * Adds extra data to be passed to server in form
      * of a key-value pair. This value will override any other value for the
      * same key that was previously set and values that were set at the configuration
      * level using {@link BranchConfiguration#addRequestExtra(String, Object)}.
+     *
+     * Passing null as a value will clear any extra that was previously set in this request
+     * (but not those set at the configuration level).
+     *
      * @param key a key
      * @param data value
      * @return this BranchDiscoveryRequest
