@@ -92,6 +92,46 @@ public class BranchSearchRequestTest {
     }
 
     @Test
+    public void testSetExtra() {
+        BranchSearchRequest request = BranchSearchRequest.Create("Pizza");
+        BranchConfiguration configuration = new BranchConfiguration();
+        JSONObject json;
+
+        // If no extra is present, json should not even have the extra key.
+        json = BranchSearchInterface.createPayload(request, configuration);
+        Assert.assertFalse(json.has(BranchDiscoveryRequest.JSONKey.Extra.toString()));
+
+        // If some extra is present, it will be inside a child json object.
+        request.setExtra("theme", "dark");
+        json = BranchSearchInterface.createPayload(request, configuration);
+        JSONObject extra = json.optJSONObject(BranchDiscoveryRequest.JSONKey.Extra.toString());
+        Assert.assertNotNull(extra);
+        Assert.assertEquals("dark", extra.optString("theme"));
+
+        // If null is passed, the object is cleared.
+        request.setExtra("theme", null);
+        json = BranchSearchInterface.createPayload(request, configuration);
+        Assert.assertFalse(json.has(BranchDiscoveryRequest.JSONKey.Extra.toString()));
+    }
+
+    @Test
+    public void testSetExtra_overridesConfiguration() {
+        BranchConfiguration configuration = new BranchConfiguration();
+        configuration.addRequestExtra("theme", "light");
+        configuration.addRequestExtra("size", "small");
+
+        BranchSearchRequest request = BranchSearchRequest.Create("Pizza");
+        request.setExtra("theme", "dark");
+        JSONObject json = BranchSearchInterface.createPayload(request, configuration);
+        JSONObject extra = json.optJSONObject(BranchDiscoveryRequest.JSONKey.Extra.toString());
+        Assert.assertNotNull(extra);
+
+        // Should override "theme" but leave "size" as is.
+        Assert.assertEquals("dark", extra.optString("theme"));
+        Assert.assertEquals("small", extra.optString("size"));
+    }
+
+    @Test
     public void testOverrideLocale() {
         String testLocale = "xx_YY";
 
