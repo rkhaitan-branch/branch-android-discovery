@@ -1,4 +1,8 @@
 # Branch Android SDK change log
+- v1.4.1
+  * _*Master Release*_ - December 16, 2019
+  * Added the ability to pass 'extra' values
+
 - v1.4.0
   * _*Master Release*_ - December 9, 2019
   * New support to optionally open a BranchLinkResult as a Deepview
