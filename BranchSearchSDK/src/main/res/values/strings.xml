@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="branch_deepview_button_description">See this content immediately after install</string>
+    <string name="branch_deepview_button">Get the App</string>
+</resources>
