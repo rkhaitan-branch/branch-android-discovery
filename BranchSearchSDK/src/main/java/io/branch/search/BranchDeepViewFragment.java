@@ -117,7 +117,13 @@ public class BranchDeepViewFragment extends DialogFragment {
         // Image
         ImageView image = view.findViewById(R.id.branch_deepview_image);
         if (image != null) {
-            loadImage(image, link.getImageUrl());
+            String url = link.getImageUrl();
+            if (url != null
+                    && url.equals(link.getAppIconUrl())
+                    && url.endsWith("=90")) {
+                url = url.substring(0, url.length() - "=90".length());
+            }
+            loadImage(image, url);
         }
 
         // Button
