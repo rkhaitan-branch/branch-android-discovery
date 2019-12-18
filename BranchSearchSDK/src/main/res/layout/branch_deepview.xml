@@ -29,6 +29,13 @@
         android:layout_width="40dp"
         android:layout_height="40dp"/>
 
+    <ImageView
+        android:background="@android:color/black"
+        android:id="@+id/branch_deepview_close"
+        android:src="@drawable/branch_deepview_close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
     <Button
         android:id="@+id/branch_deepview_button"
         android:layout_width="match_parent"

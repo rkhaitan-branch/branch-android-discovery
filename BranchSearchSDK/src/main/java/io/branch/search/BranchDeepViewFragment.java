@@ -58,9 +58,10 @@ public class BranchDeepViewFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        // We want to have all the default attributes based on the current runtime Context,
-        // but override a few ones that are defined in the R.style.BranchDeepViewFragment.
-        // This is how the Dialog class finds a good theme:
+        // We want to have all the default attributes based on the current runtime Context
+        // (light vs. dark, rounded corners, window background, ...) but override a few ones
+        // that are defined in the R.style.BranchDeepViewFragment.
+        // First, find a good base context: (this is how the Dialog class does it)
         Context context = getContext();
         final TypedValue value = new TypedValue();
         context.getTheme().resolveAttribute(android.R.attr.dialogTheme, value, true);
@@ -73,7 +74,8 @@ public class BranchDeepViewFragment extends DialogFragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.branch_deepview, container, false);
     }
@@ -81,56 +83,45 @@ public class BranchDeepViewFragment extends DialogFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Bundle args = getArguments();
         final BranchLinkResult link;
-        if (args != null && (link = args.getParcelable(KEY_LINK)) != null) {
-            // App name
-            TextView appName = view.findViewById(R.id.branch_deepview_app_name);
-            if (appName != null) {
-                String text = link.getAppName();
-                if (TextUtils.isEmpty(text)) {
-                    appName.setVisibility(View.GONE);
-                } else {
-                    appName.setText(text);
-                }
-            }
+        Bundle args = getArguments();
+        if (args == null || (link = args.getParcelable(KEY_LINK)) == null) {
+            throw new IllegalStateException("No link!");
+        }
 
-            // App logo
-            ImageView appIcon = view.findViewById(R.id.branch_deepview_app_icon);
-            if (appIcon != null) {
-                loadImage(appIcon, link.getAppIconUrl());
-            }
+        // App name
+        TextView appName = view.findViewById(R.id.branch_deepview_app_name);
+        if (appName != null) {
+            loadText(appName, link.getAppName());
+        }
 
-            // Title
-            TextView title = view.findViewById(R.id.branch_deepview_title);
-            if (title != null) {
-                String text = link.getName();
-                if (TextUtils.isEmpty(text)) {
-                    title.setVisibility(View.GONE);
-                } else {
-                    title.setText(text);
-                }
-            }
+        // App logo
+        ImageView appIcon = view.findViewById(R.id.branch_deepview_app_icon);
+        if (appIcon != null) {
+            loadImage(appIcon, link.getAppIconUrl());
+        }
 
-            // Description
-            TextView description = view.findViewById(R.id.branch_deepview_description);
-            if (description != null) {
-                String text = link.getDescription();
-                if (TextUtils.isEmpty(text)) {
-                    description.setVisibility(View.GONE);
-                } else {
-                    description.setText(text);
-                }
-            }
+        // Title
+        TextView title = view.findViewById(R.id.branch_deepview_title);
+        if (title != null) {
+            loadText(title, link.getName());
+        }
 
-            // Image
-            ImageView image = view.findViewById(R.id.branch_deepview_image);
-            if (image != null) {
-                loadImage(image, link.getImageUrl());
-            }
+        // Description
+        TextView description = view.findViewById(R.id.branch_deepview_description);
+        if (description != null) {
+            loadText(description, link.getDescription());
+        }
 
-            // Button
-            Button button = view.findViewById(R.id.branch_deepview_button);
+        // Image
+        ImageView image = view.findViewById(R.id.branch_deepview_image);
+        if (image != null) {
+            loadImage(image, link.getImageUrl());
+        }
+
+        // Button
+        Button button = view.findViewById(R.id.branch_deepview_button);
+        if (button != null) {
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -141,9 +132,27 @@ public class BranchDeepViewFragment extends DialogFragment {
                     dismiss();
                 }
             });
-            // TODO close button
         } else {
-            throw new IllegalStateException("No link!");
+            throw new IllegalStateException("Call to action button is missing!");
+        }
+
+        // Close button
+        View close = view.findViewById(R.id.branch_deepview_close);
+        if (close != null) {
+            close.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dismiss();
+                }
+            });
+        }
+    }
+
+    private void loadText(TextView textView, @Nullable String text) {
+        if (TextUtils.isEmpty(text)) {
+            textView.setVisibility(View.GONE);
+        } else {
+            textView.setText(text);
         }
     }
 
