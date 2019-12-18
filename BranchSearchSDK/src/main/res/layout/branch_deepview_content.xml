@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal">
+
+    <TextView
+        android:id="@+id/branch_deepview_title"
+        android:textSize="24sp"
+        android:textColor="?android:attr/textColorPrimary"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/branch_deepview_description"
+        android:textSize="14sp"
+        android:textColor="?android:attr/textColorSecondary"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <!-- Space for tall layouts -->
+    <Space
+        android:minHeight="32dp"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <TextView
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:id="@+id/branch_deepview_button_description"
+        android:text="@string/branch_deepview_button_description"
+        android:textSize="12sp"
+        android:textColor="?android:attr/textColorTertiary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <!--View
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="8dp"
+        android:background="?android:attr/textColorPrimary"
+        android:alpha="0.2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"/-->
+
+    <Button
+        android:id="@+id/branch_deepview_button"
+        android:text="@string/branch_deepview_button"
+        android:layout_marginTop="4dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+</LinearLayout>

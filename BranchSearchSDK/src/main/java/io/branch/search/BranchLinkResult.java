@@ -129,7 +129,7 @@ public class BranchLinkResult implements Parcelable {
 
     /**
      * Opens the link into a <a href="https://branch.io/deepviews/">Branch Deepview</a>.
-     * The content preview will be rendered inside a in-app web view with the option to
+     * The content preview will be rendered inside a native view with the option to
      * download the app from the play store.
      *
      * @param manager a fragment manager
@@ -143,7 +143,7 @@ public class BranchLinkResult implements Parcelable {
         // NOTE: We never return an error, but we might in a future implementation.
         // This also is consistent with openContent(Context, boolean).
         BranchDeepViewFragment fragment = BranchDeepViewFragment.getInstance(this);
-        fragment.show(manager, "BranchDeepViewFragment");
+        fragment.show(manager, BranchDeepViewFragment.TAG);
         return null;
     }
 

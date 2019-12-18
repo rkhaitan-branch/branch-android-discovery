@@ -41,8 +41,9 @@ import okhttp3.ResponseBody;
  */
 public class BranchDeepViewFragment extends DialogFragment {
 
-    private static final String KEY_LINK = "link";
+    public static final String TAG = "BranchDeepViewFragment";
 
+    private static final String KEY_LINK = "link";
     private static final OkHttpClient CLIENT = new OkHttpClient.Builder().build();
 
     @NonNull
