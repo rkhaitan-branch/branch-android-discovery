@@ -18,15 +18,13 @@
         android:id="@+id/branch_deepview_app_name"
         android:textColor="?android:attr/textColorPrimary"
         android:textSize="20sp"
+        android:maxLines="1"
+        android:ellipsize="end"
         android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
-    <Space
         android:layout_width="0dp"
         android:layout_weight="1"
-        android:layout_height="match_parent"/>
+        android:layout_height="wrap_content"/>
 
     <ImageView
         android:id="@+id/branch_deepview_close"

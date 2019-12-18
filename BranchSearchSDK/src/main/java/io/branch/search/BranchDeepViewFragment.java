@@ -6,34 +6,31 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.widget.CircularProgressDrawable;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
 
 /**
  * A dialog that can render deepviews.
@@ -120,8 +117,8 @@ public class BranchDeepViewFragment extends DialogFragment {
             String url = link.getImageUrl();
             if (url != null
                     && url.equals(link.getAppIconUrl())
-                    && url.endsWith("=90")) {
-                url = url.substring(0, url.length() - "=90".length());
+                    && url.endsWith("=s90")) {
+                url = url.substring(0, url.length() - "=s90".length());
             }
             loadImage(image, url);
         }
@@ -164,11 +161,20 @@ public class BranchDeepViewFragment extends DialogFragment {
     }
 
     private void loadImage(@NonNull final ImageView imageView, @Nullable String url) {
-        if (TextUtils.isEmpty(url)) {
+        Context context = imageView.getContext();
+        CircularProgressDrawable progress = new CircularProgressDrawable(context);
+        float density = context.getResources().getDisplayMetrics().density;
+        progress.setCenterRadius(16 * density);
+        progress.setStrokeWidth(4 * density);
+        progress.setArrowEnabled(false);
+        progress.setColorSchemeColors(getAccentColor(context));
+        progress.start();
+        imageView.setImageDrawable(progress);
+        HttpUrl httpUrl = url == null ? null : HttpUrl.parse(url);
+        if (httpUrl == null) {
             imageView.setVisibility(View.GONE);
         } else {
-            //noinspection ConstantConditions
-            Request request = new Request.Builder().url(url).build();
+            Request request = new Request.Builder().url(httpUrl).build();
             CLIENT.newCall(request).enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
@@ -210,5 +216,21 @@ public class BranchDeepViewFragment extends DialogFragment {
                 }
             });
         }
+    }
+
+    private int getAccentColor(@NonNull Context context) {
+        int colorAttr;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            colorAttr = android.R.attr.colorAccent;
+        } else {
+            colorAttr = context.getResources().getIdentifier("colorAccent",
+                    "attr", context.getPackageName());
+        }
+        if (colorAttr == 0) {
+            colorAttr = android.R.attr.textColorPrimary;
+        }
+        TypedValue outValue = new TypedValue();
+        context.getTheme().resolveAttribute(colorAttr, outValue, true);
+        return outValue.data;
     }
 }
