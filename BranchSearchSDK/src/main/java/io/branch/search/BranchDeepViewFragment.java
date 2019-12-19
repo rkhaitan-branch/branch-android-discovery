@@ -254,7 +254,7 @@ public class BranchDeepViewFragment extends DialogFragment {
         @Override
         protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
             super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(
-                    Math.round(0.5F * mAvailable),
+                    Math.round(0.4F * mAvailable),
                     MeasureSpec.EXACTLY));
         }
     }
