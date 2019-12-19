@@ -236,8 +236,6 @@ public class BranchDeepViewFragment extends DialogFragment {
     }
 
     public static class PercentImageView extends ImageView {
-        private final int mAvailable;
-
         public PercentImageView(Context context) {
             this(context, null);
         }
@@ -248,14 +246,7 @@ public class BranchDeepViewFragment extends DialogFragment {
 
         public PercentImageView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
             super(context, attrs, defStyleAttr);
-            mAvailable = context.getResources().getDisplayMetrics().heightPixels;
-        }
-
-        @Override
-        protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-            super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(
-                    Math.round(0.4F * mAvailable),
-                    MeasureSpec.EXACTLY));
+            setMaxHeight((int) (0.4F * context.getResources().getDisplayMetrics().heightPixels));
         }
     }
 }
