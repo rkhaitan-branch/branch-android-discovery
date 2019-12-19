@@ -9,7 +9,7 @@
     <!-- Image -->
     <ImageView
         android:id="@+id/branch_deepview_image"
-        android:scaleType="centerCrop"
+        android:scaleType="centerInside"
         android:layout_width="0dp"
         android:layout_weight="0.5"
         android:layout_height="match_parent"/>
