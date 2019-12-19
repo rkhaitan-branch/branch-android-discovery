@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -127,6 +129,13 @@ public class BranchDeepViewFragment extends DialogFragment {
         // Button
         Button button = view.findViewById(R.id.branch_deepview_button);
         if (button != null) {
+            int color = getPrimaryColor(getContext());
+            float luminance = (float) ((0.2126 * Color.red(color))
+                    + (0.7152 * Color.green(color))
+                    + (0.0722 * Color.blue(color))) / 255;
+            button.getBackground().setColorFilter(color,
+                    PorterDuff.Mode.SRC_IN);
+            button.setTextColor(luminance > 0.5F ? Color.BLACK : Color.WHITE);
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -235,6 +244,22 @@ public class BranchDeepViewFragment extends DialogFragment {
         return outValue.data;
     }
 
+    private int getPrimaryColor(@NonNull Context context) {
+        int colorAttr;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            colorAttr = android.R.attr.colorPrimary;
+        } else {
+            colorAttr = context.getResources().getIdentifier("colorPrimary",
+                    "attr", context.getPackageName());
+        }
+        if (colorAttr == 0) {
+            colorAttr = android.R.attr.textColorPrimary;
+        }
+        TypedValue outValue = new TypedValue();
+        context.getTheme().resolveAttribute(colorAttr, outValue, true);
+        return outValue.data;
+    }
+
     public static class PercentImageView extends ImageView {
         public PercentImageView(Context context) {
             this(context, null);
@@ -246,7 +271,14 @@ public class BranchDeepViewFragment extends DialogFragment {
 
         public PercentImageView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
             super(context, attrs, defStyleAttr);
-            setMaxHeight((int) (0.4F * context.getResources().getDisplayMetrics().heightPixels));
+        }
+
+        @Override
+        protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+            super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(
+                    (int) (0.4F * getResources().getDisplayMetrics().heightPixels),
+                    MeasureSpec.EXACTLY
+            ));
         }
     }
 }

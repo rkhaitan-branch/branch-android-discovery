@@ -3,37 +3,25 @@
 <!-- https://stackoverflow.com/a/15594269/4288782 -->
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <!-- We should never scroll due to our set-up, but let's be sure. -->
-    <ScrollView
-        android:fillViewport="true"
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <LinearLayout
-            android:orientation="vertical"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal">
+
+        <!-- Top header -->
+        <include layout="@layout/branch_deepview_toolbar" />
+
+        <!-- Image -->
+        <view class="io.branch.search.BranchDeepViewFragment$PercentImageView"
+            android:background="@color/branch_deepview_image_background"
+            android:id="@+id/branch_deepview_image"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal">
+            android:layout_height="wrap_content" />
 
-            <!-- Top header -->
-            <include layout="@layout/branch_deepview_toolbar" />
-
-            <!-- Image -->
-            <view class="io.branch.search.BranchDeepViewFragment$PercentImageView"
-                android:background="@color/branch_deepview_image_background"
-                android:id="@+id/branch_deepview_image"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:adjustViewBounds="true"/>
-
-            <!-- Content -->
-            <include
-                layout="@layout/branch_deepview_content"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"/>
-        </LinearLayout>
-    </ScrollView>
+        <!-- Content -->
+        <include layout="@layout/branch_deepview_content"/>
+    </LinearLayout>
 </RelativeLayout>
