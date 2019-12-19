@@ -14,16 +14,21 @@
         android:layout_weight="0.5"
         android:layout_height="match_parent"/>
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="0dp"
         android:layout_weight="0.5"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:fillViewport="true">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-        <!-- Top header -->
-        <include layout="@layout/branch_deepview_toolbar" />
+            <!-- Top header -->
+            <include layout="@layout/branch_deepview_toolbar" />
 
-        <!-- Content -->
-        <include layout="@layout/branch_deepview_content" />
-    </LinearLayout>
+            <!-- Content -->
+            <include layout="@layout/branch_deepview_content" />
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>

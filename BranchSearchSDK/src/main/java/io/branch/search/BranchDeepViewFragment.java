@@ -13,6 +13,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.widget.CircularProgressDrawable;
 import android.text.TextUtils;
+import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
@@ -232,5 +233,29 @@ public class BranchDeepViewFragment extends DialogFragment {
         TypedValue outValue = new TypedValue();
         context.getTheme().resolveAttribute(colorAttr, outValue, true);
         return outValue.data;
+    }
+
+    public static class PercentImageView extends ImageView {
+        private final int mAvailable;
+
+        public PercentImageView(Context context) {
+            this(context, null);
+        }
+
+        public PercentImageView(Context context, @Nullable AttributeSet attrs) {
+            this(context, attrs, 0);
+        }
+
+        public PercentImageView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+            super(context, attrs, defStyleAttr);
+            mAvailable = context.getResources().getDisplayMetrics().heightPixels;
+        }
+
+        @Override
+        protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+            super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(
+                    Math.round(0.5F * mAvailable),
+                    MeasureSpec.EXACTLY));
+        }
     }
 }
