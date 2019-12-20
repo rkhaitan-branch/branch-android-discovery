@@ -130,14 +130,13 @@ public class BranchDeepViewFragment extends DialogFragment {
         // Button
         Button button = view.findViewById(R.id.branch_deepview_button);
         if (button != null) {
-            int color = ContextCompat.getColor(getContext(),
+            int background = ContextCompat.getColor(getContext(),
                     R.color.branch_deepview_button_background);
-            float luminance = (float) ((0.2126 * Color.red(color))
-                    + (0.7152 * Color.green(color))
-                    + (0.0722 * Color.blue(color))) / 255;
-            button.getBackground().setColorFilter(color,
+            int text = ContextCompat.getColor(getContext(),
+                    R.color.branch_deepview_button_text);
+            button.getBackground().setColorFilter(background,
                     PorterDuff.Mode.SRC_IN);
-            button.setTextColor(luminance > 0.5F ? Color.BLACK : Color.WHITE);
+            button.setTextColor(text);
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
