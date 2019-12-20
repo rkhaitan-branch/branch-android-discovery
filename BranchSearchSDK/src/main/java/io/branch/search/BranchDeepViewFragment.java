@@ -93,27 +93,19 @@ public class BranchDeepViewFragment extends DialogFragment {
 
         // App name
         TextView appName = view.findViewById(R.id.branch_deepview_app_name);
-        if (appName != null) {
-            loadText(appName, link.getAppName());
-        }
+        if (appName != null) loadText(appName, link.getAppName());
 
         // App logo
         ImageView appIcon = view.findViewById(R.id.branch_deepview_app_icon);
-        if (appIcon != null) {
-            loadImage(appIcon, link.getAppIconUrl());
-        }
+        if (appIcon != null) loadImage(appIcon, link.getAppIconUrl());
 
         // Title
         TextView title = view.findViewById(R.id.branch_deepview_title);
-        if (title != null) {
-            loadText(title, link.getName());
-        }
+        if (title != null) loadText(title, link.getName());
 
         // Description
         TextView description = view.findViewById(R.id.branch_deepview_description);
-        if (description != null) {
-            loadText(description, link.getDescription());
-        }
+        if (description != null) loadText(description, link.getDescription());
 
         // Image
         ImageView image = view.findViewById(R.id.branch_deepview_image);
