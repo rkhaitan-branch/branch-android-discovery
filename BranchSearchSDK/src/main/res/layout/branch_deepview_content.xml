@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/branch_deepview_title"
+        android:textSize="@dimen/branch_deepview_title_text"
+        android:textColor="?android:attr/textColorPrimary"
+        android:maxLines="3"
+        android:ellipsize="end"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/branch_deepview_description"
+        android:textSize="@dimen/branch_deepview_description_text"
+        android:textColor="?android:attr/textColorSecondary"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <!-- Space for tall layouts -->
+    <Space
+        android:minHeight="32dp"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <TextView
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:id="@+id/branch_deepview_button_description"
+        android:text="@string/branch_deepview_button_description"
+        android:textSize="@dimen/branch_deepview_button_description_text"
+        android:textColor="?android:attr/textColorTertiary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/branch_deepview_button"
+        android:text="@string/branch_deepview_button"
+        android:layout_marginTop="4dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+</merge>

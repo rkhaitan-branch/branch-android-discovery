@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.AppCompatRatingBar;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -29,7 +30,7 @@ import io.branch.search.demo.R;
 /**
  * View for a content result item
  */
-public class ContentItem extends LinearLayout implements View.OnClickListener {
+public class ContentItem extends LinearLayout implements View.OnClickListener, View.OnLongClickListener {
 
     private Context context = null;
     private TextView titleText_, descTxt_;
@@ -81,6 +82,7 @@ public class ContentItem extends LinearLayout implements View.OnClickListener {
             contentItem_.setVisibility(GONE);
             searchItemView_.setVisibility(VISIBLE);
             searchItemView_.setOnClickListener(this);
+            searchItemView_.setOnLongClickListener(this);
             searchItemView_.setTag(contentResult);
             searchItemView_.setText(ContentDisplayHelper.getFormattedSearchTitle(getContext(), query, contentResult));
 
@@ -129,6 +131,7 @@ public class ContentItem extends LinearLayout implements View.OnClickListener {
         }
 
         contentItem_.setOnClickListener(this);
+        contentItem_.setOnLongClickListener(this);
         headerItemTextView_.setVisibility(View.GONE);
     }
 
@@ -158,6 +161,7 @@ public class ContentItem extends LinearLayout implements View.OnClickListener {
         headerItemTextView_.setVisibility(View.VISIBLE);
 
         this.setOnClickListener(this);
+        this.setOnLongClickListener(this);
         this.setTag(appResult);
     }
 
@@ -173,6 +177,17 @@ public class ContentItem extends LinearLayout implements View.OnClickListener {
             BranchAppResult appResult = (BranchAppResult)result;
             appResult.openSearchDeepLink(getContext(), true);
         }
+    }
+
+    @Override
+    public boolean onLongClick(View v) {
+        Object result = v.getTag();
+        if (result instanceof BranchLinkResult) {
+            BranchLinkResult linkResult = (BranchLinkResult)result;
+            linkResult.openDeepView(((FragmentActivity) getContext()).getSupportFragmentManager());
+            return true;
+        }
+        return false;
     }
 
     private void ControlContentItemTextWrap(float rating, int reviewCnt) {
