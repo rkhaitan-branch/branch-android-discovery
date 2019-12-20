@@ -23,8 +23,8 @@
         <View
             android:layout_width="1dp"
             android:layout_height="match_parent"
-            android:background="?android:attr/textColorPrimary"
-            android:alpha="0.1" />
+            android:background="@color/branch_deepview_divider"
+            android:alpha="0.2" />
 
         <LinearLayout
             android:layout_width="0dp"
