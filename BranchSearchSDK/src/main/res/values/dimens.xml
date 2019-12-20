@@ -5,4 +5,6 @@
     <dimen name="branch_deepview_title_text">20sp</dimen>
     <dimen name="branch_deepview_description_text">14sp</dimen>
     <dimen name="branch_deepview_button_description_text">12sp</dimen>
+    <dimen name="branch_deepview_loading_radius">16dp</dimen>
+    <dimen name="branch_deepview_loading_stroke">4dp</dimen>
 </resources>

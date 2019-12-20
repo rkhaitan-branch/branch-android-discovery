@@ -172,14 +172,14 @@ public class BranchDeepViewFragment extends DialogFragment {
     }
 
     private void loadImage(@NonNull final ImageView imageView, @Nullable String url) {
-        Context context = imageView.getContext();
-        CircularProgressDrawable progress = new CircularProgressDrawable(context);
-        float density = context.getResources().getDisplayMetrics().density;
-        progress.setCenterRadius(16 * density);
-        progress.setStrokeWidth(4 * density);
+        CircularProgressDrawable progress = new CircularProgressDrawable(getContext());
         progress.setArrowEnabled(false);
-        int color = ContextCompat.getColor(getActivity(), R.color.branch_deepview_loading);
-        progress.setColorSchemeColors(color);
+        progress.setCenterRadius(getResources()
+                .getDimension(R.dimen.branch_deepview_loading_radius));
+        progress.setStrokeWidth(getResources()
+                .getDimension(R.dimen.branch_deepview_loading_stroke));
+        progress.setColorSchemeColors(ContextCompat.getColor(getContext(),
+                R.color.branch_deepview_loading));
         progress.start();
         imageView.setImageDrawable(progress);
         HttpUrl httpUrl = url == null ? null : HttpUrl.parse(url);
