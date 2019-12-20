@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.CircularProgressDrawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -129,7 +130,8 @@ public class BranchDeepViewFragment extends DialogFragment {
         // Button
         Button button = view.findViewById(R.id.branch_deepview_button);
         if (button != null) {
-            int color = getPrimaryColor(getContext());
+            int color = ContextCompat.getColor(getContext(),
+                    R.color.branch_deepview_button_background);
             float luminance = (float) ((0.2126 * Color.red(color))
                     + (0.7152 * Color.green(color))
                     + (0.0722 * Color.blue(color))) / 255;
@@ -177,7 +179,8 @@ public class BranchDeepViewFragment extends DialogFragment {
         progress.setCenterRadius(16 * density);
         progress.setStrokeWidth(4 * density);
         progress.setArrowEnabled(false);
-        progress.setColorSchemeColors(getAccentColor(context));
+        int color = ContextCompat.getColor(getActivity(), R.color.branch_deepview_loading);
+        progress.setColorSchemeColors(color);
         progress.start();
         imageView.setImageDrawable(progress);
         HttpUrl httpUrl = url == null ? null : HttpUrl.parse(url);
@@ -226,38 +229,6 @@ public class BranchDeepViewFragment extends DialogFragment {
                 }
             });
         }
-    }
-
-    private int getAccentColor(@NonNull Context context) {
-        int colorAttr;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            colorAttr = android.R.attr.colorAccent;
-        } else {
-            colorAttr = context.getResources().getIdentifier("colorAccent",
-                    "attr", context.getPackageName());
-        }
-        if (colorAttr == 0) {
-            colorAttr = android.R.attr.textColorPrimary;
-        }
-        TypedValue outValue = new TypedValue();
-        context.getTheme().resolveAttribute(colorAttr, outValue, true);
-        return outValue.data;
-    }
-
-    private int getPrimaryColor(@NonNull Context context) {
-        int colorAttr;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            colorAttr = android.R.attr.colorPrimary;
-        } else {
-            colorAttr = context.getResources().getIdentifier("colorPrimary",
-                    "attr", context.getPackageName());
-        }
-        if (colorAttr == 0) {
-            colorAttr = android.R.attr.textColorPrimary;
-        }
-        TypedValue outValue = new TypedValue();
-        context.getTheme().resolveAttribute(colorAttr, outValue, true);
-        return outValue.data;
     }
 
     public static class PercentImageView extends ImageView {
