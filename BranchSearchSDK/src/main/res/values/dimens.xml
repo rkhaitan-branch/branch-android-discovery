@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="branch_deepview_image_padding">8dp</dimen>
+    <dimen name="branch_deepview_app_name_text">20sp</dimen>
+    <dimen name="branch_deepview_title_text">20sp</dimen>
+    <dimen name="branch_deepview_description_text">14sp</dimen>
+    <dimen name="branch_deepview_button_description_text">12sp</dimen>
+</resources>

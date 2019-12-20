@@ -14,12 +14,20 @@
         <!-- Top header -->
         <include layout="@layout/branch_deepview_toolbar" />
 
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/textColorPrimary"
+            android:alpha="0.1" />
+
         <!-- Image -->
         <view class="io.branch.search.BranchDeepViewFragment$PercentImageView"
             android:background="@color/branch_deepview_image_background"
             android:id="@+id/branch_deepview_image"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:padding="@dimen/branch_deepview_image_padding"/>
 
         <!-- Content -->
         <include layout="@layout/branch_deepview_content"/>

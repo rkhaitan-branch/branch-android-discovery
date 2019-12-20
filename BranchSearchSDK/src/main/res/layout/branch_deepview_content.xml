@@ -5,7 +5,7 @@
 
     <TextView
         android:id="@+id/branch_deepview_title"
-        android:textSize="20sp"
+        android:textSize="@dimen/branch_deepview_title_text"
         android:textColor="?android:attr/textColorPrimary"
         android:maxLines="3"
         android:ellipsize="end"
@@ -17,7 +17,7 @@
 
     <TextView
         android:id="@+id/branch_deepview_description"
-        android:textSize="14sp"
+        android:textSize="@dimen/branch_deepview_description_text"
         android:textColor="?android:attr/textColorSecondary"
         android:maxLines="2"
         android:ellipsize="end"
@@ -39,7 +39,7 @@
         android:layout_marginRight="16dp"
         android:id="@+id/branch_deepview_button_description"
         android:text="@string/branch_deepview_button_description"
-        android:textSize="12sp"
+        android:textSize="@dimen/branch_deepview_button_description_text"
         android:textColor="?android:attr/textColorTertiary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
