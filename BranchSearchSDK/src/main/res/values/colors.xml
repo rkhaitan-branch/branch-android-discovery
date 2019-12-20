@@ -2,6 +2,6 @@
 <resources>
     <color name="branch_deepview_image_background">#00FFFFFF</color>
     <color name="branch_deepview_loading">#7F7F7F</color>
-    <color name="branch_deepview_button_background">#4898D1</color>
-    <color name="branch_deepview_button_text">#FFFFFF</color>
+    <color name="branch_deepview_button_background">#C5C5C5</color>
+    <color name="branch_deepview_button_text">#000000</color>
 </resources>
