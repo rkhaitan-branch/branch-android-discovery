@@ -224,11 +224,11 @@ public class BranchDeepViewFragment extends DialogFragment {
 
     public static class PercentImageView extends ImageView {
         public PercentImageView(Context context) {
-            this(context, null);
+            super(context);
         }
 
         public PercentImageView(Context context, @Nullable AttributeSet attrs) {
-            this(context, attrs, 0);
+            super(context, attrs);
         }
 
         public PercentImageView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
