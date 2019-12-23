@@ -5,7 +5,7 @@
          we declare no parent and in BranchDeepViewFragment, we get a dialog theme from the
          runtime Context. Then we wrap that theme with the style below. -->
     <style name="BranchDeepViewFragment">
-        <item name="android:windowMinWidthMajor">95%</item>
-        <item name="android:windowMinWidthMinor">95%</item>
+        <item name="android:windowMinWidthMajor">85%</item>
+        <item name="android:windowMinWidthMinor">85%</item>
     </style>
 </resources>

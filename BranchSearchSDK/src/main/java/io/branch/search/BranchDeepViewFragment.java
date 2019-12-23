@@ -9,18 +9,17 @@ import android.graphics.BitmapFactory;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PixelFormat;
-import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.ColorRes;
+import android.support.annotation.DimenRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -86,7 +85,13 @@ public class BranchDeepViewFragment extends DialogFragment {
         // Now wrap it with our style:
         context = new ContextThemeWrapper(context, R.style.BranchDeepViewFragment);
         // Finally create the dialog:
-        return new Dialog(context, 0);
+        Dialog dialog = new Dialog(context, 0);
+        // Apply our background:
+        Drawable background = ContextCompat.getDrawable(context,
+                R.drawable.branch_deepview_background);
+        //noinspection ConstantConditions
+        dialog.getWindow().setBackgroundDrawable(background);
+        return dialog;
     }
 
     @Nullable
@@ -110,8 +115,7 @@ public class BranchDeepViewFragment extends DialogFragment {
         // App logo
         ImageView appIcon = view.findViewById(R.id.branch_deepview_app_icon);
         if (appIcon != null) {
-            float corners = getResources().getDimension(R.dimen.branch_deepview_app_icon_corners);
-            loadImage(appIcon, link.getAppIconUrl(), corners);
+            loadImage(appIcon, link.getAppIconUrl(), R.dimen.branch_deepview_app_icon_corners);
         }
 
         // Title
@@ -133,8 +137,7 @@ public class BranchDeepViewFragment extends DialogFragment {
                 // which is not suitable for fullscreen images.
                 url = url.substring(0, url.length() - APP_ICON_URL_SMALL_SUFFIX.length());
             }
-            float corners = getResources().getDimension(R.dimen.branch_deepview_image_corners);
-            loadImage(image, url, corners);
+            loadImage(image, url, R.dimen.branch_deepview_image_corners);
         }
 
         // Button
@@ -173,7 +176,9 @@ public class BranchDeepViewFragment extends DialogFragment {
         }
     }
 
-    private void loadImage(@NonNull final ImageView imageView, @Nullable String url, final float corners) {
+    private void loadImage(@NonNull final ImageView imageView,
+                           @Nullable String url,
+                           @DimenRes final int cornersRes) {
         CircularProgressDrawable progress = new CircularProgressDrawable(getContext());
         progress.setArrowEnabled(false);
         progress.setCenterRadius(getResources()
@@ -211,7 +216,8 @@ public class BranchDeepViewFragment extends DialogFragment {
                         imageView.post(new Runnable() {
                             @Override
                             public void run() {
-                                if (corners > 0) {
+                                if (cornersRes != 0) {
+                                    float corners = getResources().getDimension(cornersRes);
                                     imageView.setImageDrawable(
                                             new RoundedCornersDrawable(bitmap, corners));
                                 } else {

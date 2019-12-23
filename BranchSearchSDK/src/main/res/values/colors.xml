@@ -5,4 +5,5 @@
     <color name="branch_deepview_button_background">#C5C5C5</color>
     <color name="branch_deepview_button_text">#000000</color>
     <color name="branch_deepview_divider">#7F7F7F</color>
+    <color name="branch_deepview_background">?android:attr/colorBackground</color>
 </resources>
