@@ -1,11 +1,24 @@
 package io.branch.search;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.BitmapShader;
+import android.graphics.Canvas;
+import android.graphics.ColorFilter;
+import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.PixelFormat;
 import android.graphics.PorterDuff;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.Shader;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -96,7 +109,10 @@ public class BranchDeepViewFragment extends DialogFragment {
 
         // App logo
         ImageView appIcon = view.findViewById(R.id.branch_deepview_app_icon);
-        if (appIcon != null) loadImage(appIcon, link.getAppIconUrl());
+        if (appIcon != null) {
+            float corners = getResources().getDimension(R.dimen.branch_deepview_app_icon_corners);
+            loadImage(appIcon, link.getAppIconUrl(), corners);
+        }
 
         // Title
         TextView title = view.findViewById(R.id.branch_deepview_title);
@@ -117,7 +133,8 @@ public class BranchDeepViewFragment extends DialogFragment {
                 // which is not suitable for fullscreen images.
                 url = url.substring(0, url.length() - APP_ICON_URL_SMALL_SUFFIX.length());
             }
-            loadImage(image, url);
+            float corners = getResources().getDimension(R.dimen.branch_deepview_image_corners);
+            loadImage(image, url, corners);
         }
 
         // Button
@@ -156,7 +173,7 @@ public class BranchDeepViewFragment extends DialogFragment {
         }
     }
 
-    private void loadImage(@NonNull final ImageView imageView, @Nullable String url) {
+    private void loadImage(@NonNull final ImageView imageView, @Nullable String url, final float corners) {
         CircularProgressDrawable progress = new CircularProgressDrawable(getContext());
         progress.setArrowEnabled(false);
         progress.setCenterRadius(getResources()
@@ -194,7 +211,12 @@ public class BranchDeepViewFragment extends DialogFragment {
                         imageView.post(new Runnable() {
                             @Override
                             public void run() {
-                                imageView.setImageBitmap(bitmap);
+                                if (corners > 0) {
+                                    imageView.setImageDrawable(
+                                            new RoundedCornersDrawable(bitmap, corners));
+                                } else {
+                                    imageView.setImageBitmap(bitmap);
+                                }
                             }
                         });
                     } catch (Exception e) {
@@ -215,17 +237,66 @@ public class BranchDeepViewFragment extends DialogFragment {
         }
     }
 
-    public static class PercentImageView extends ImageView {
-        public PercentImageView(Context context) {
-            super(context);
+    private static class RoundedCornersDrawable extends Drawable {
+        private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        private final Path mPath = new Path();
+        private final float mCorners;
+        private final Bitmap mBitmap;
+        private final RectF mRect = new RectF();
+
+        private RoundedCornersDrawable(@NonNull Bitmap bitmap, float corners) {
+            mBitmap = bitmap;
+            mPaint.setShader(new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
+            mCorners = corners;
         }
 
+        @Override
+        public void setAlpha(int alpha) {
+            mPaint.setAlpha(alpha);
+        }
+
+        @Override
+        public void setColorFilter(@Nullable ColorFilter colorFilter) { }
+
+        @Override
+        public int getOpacity() {
+            return PixelFormat.TRANSLUCENT;
+        }
+
+        @Override
+        protected void onBoundsChange(Rect bounds) {
+            super.onBoundsChange(bounds);
+            mRect.left = bounds.left;
+            mRect.top = bounds.top;
+            mRect.right = bounds.right;
+            mRect.bottom = bounds.bottom;
+        }
+
+        @SuppressLint("CanvasSize")
+        @Override
+        public void draw(@NonNull Canvas canvas) {
+            float cornerX = mCorners * (float) getIntrinsicWidth() / canvas.getWidth();
+            float cornerY = mCorners * (float) getIntrinsicHeight() / canvas.getHeight();
+            float corner = Math.max(cornerX, cornerY);
+            mPath.rewind();
+            mPath.addRoundRect(mRect, corner, corner, Path.Direction.CW);
+            canvas.drawPath(mPath, mPaint);
+        }
+
+        @Override
+        public int getIntrinsicHeight() {
+            return mBitmap.getHeight();
+        }
+
+        @Override
+        public int getIntrinsicWidth() {
+            return mBitmap.getWidth();
+        }
+    }
+
+    public static class PercentImageView extends ImageView {
         public PercentImageView(Context context, @Nullable AttributeSet attrs) {
             super(context, attrs);
-        }
-
-        public PercentImageView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-            super(context, attrs, defStyleAttr);
         }
 
         @Override
