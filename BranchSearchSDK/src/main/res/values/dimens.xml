@@ -10,6 +10,9 @@
     <dimen name="branch_deepview_button_text">16sp</dimen>
     <dimen name="branch_deepview_button_elevation">0dp</dimen>
     <dimen name="branch_deepview_button_corners">24dp</dimen>
+    <dimen name="branch_deepview_button_margin_top">8dp</dimen>
+    <dimen name="branch_deepview_button_margin_horizontal">16dp</dimen>
+    <dimen name="branch_deepview_button_margin_bottom">16dp</dimen>
     <dimen name="branch_deepview_loading_radius">16dp</dimen>
     <dimen name="branch_deepview_loading_stroke">4dp</dimen>
 </resources>
