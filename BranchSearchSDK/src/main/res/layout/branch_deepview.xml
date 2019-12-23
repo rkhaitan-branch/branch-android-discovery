@@ -1,36 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Using RelativeLayout as root lets us use the full height, for some reason. -->
-<!-- https://stackoverflow.com/a/15594269/4288782 -->
-<RelativeLayout
+
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <LinearLayout
-        android:orientation="vertical"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal">
+
+    <!-- Top header -->
+    <include layout="@layout/branch_deepview_toolbar" />
+
+    <!-- Divider -->
+    <ImageView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center_horizontal">
+        android:layout_height="1dp"
+        android:background="@color/branch_deepview_divider"
+        android:alpha="0.2" />
 
-        <!-- Top header -->
-        <include layout="@layout/branch_deepview_toolbar" />
+    <!-- Image -->
+    <view
+        class="io.branch.search.BranchDeepViewFragment$PercentImageView"
+        android:background="@color/branch_deepview_image_background"
+        android:id="@+id/branch_deepview_image"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/branch_deepview_image_padding"/>
 
-        <!-- Divider -->
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/branch_deepview_divider"
-            android:alpha="0.2" />
-
-        <!-- Image -->
-        <view
-            class="io.branch.search.BranchDeepViewFragment$PercentImageView"
-            android:background="@color/branch_deepview_image_background"
-            android:id="@+id/branch_deepview_image"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/branch_deepview_image_padding"/>
-
-        <!-- Content -->
-        <include layout="@layout/branch_deepview_content"/>
-    </LinearLayout>
-</RelativeLayout>
+    <!-- Content -->
+    <include layout="@layout/branch_deepview_content"/>
+</LinearLayout>

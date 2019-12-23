@@ -123,13 +123,6 @@ public class BranchDeepViewFragment extends DialogFragment {
         // Button
         Button button = view.findViewById(R.id.branch_deepview_button);
         if (button != null) {
-            int background = ContextCompat.getColor(getContext(),
-                    R.color.branch_deepview_button_background);
-            int text = ContextCompat.getColor(getContext(),
-                    R.color.branch_deepview_button_text);
-            button.getBackground().setColorFilter(background,
-                    PorterDuff.Mode.SRC_IN);
-            button.setTextColor(text);
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -238,7 +231,7 @@ public class BranchDeepViewFragment extends DialogFragment {
         @Override
         protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
             super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(
-                    (int) (0.4F * getResources().getDisplayMetrics().heightPixels),
+                    (int) (0.3F * getResources().getDisplayMetrics().heightPixels),
                     MeasureSpec.EXACTLY
             ));
         }

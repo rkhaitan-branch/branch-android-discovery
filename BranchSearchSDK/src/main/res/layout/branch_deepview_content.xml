@@ -51,6 +51,11 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginBottom="8dp"
+        android:background="@drawable/branch_deepview_button_background"
+        android:textSize="@dimen/branch_deepview_button_text"
+        android:textColor="@color/branch_deepview_button_text"
+        android:stateListAnimator="@null"
+        android:elevation="@dimen/branch_deepview_button_elevation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
