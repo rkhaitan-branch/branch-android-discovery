@@ -262,7 +262,9 @@ public class BranchDeepViewFragment extends DialogFragment {
         }
 
         @Override
-        public void setColorFilter(@Nullable ColorFilter colorFilter) { }
+        public void setColorFilter(@Nullable ColorFilter colorFilter) {
+            mPaint.setColorFilter(colorFilter);
+        }
 
         @Override
         public int getOpacity() {
