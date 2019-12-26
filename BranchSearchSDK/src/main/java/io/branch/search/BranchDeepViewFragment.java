@@ -1,13 +1,25 @@
 package io.branch.search;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.PorterDuff;
+import android.graphics.BitmapShader;
+import android.graphics.Canvas;
+import android.graphics.ColorFilter;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.PixelFormat;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.Shader;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.ColorRes;
+import android.support.annotation.DimenRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -73,7 +85,13 @@ public class BranchDeepViewFragment extends DialogFragment {
         // Now wrap it with our style:
         context = new ContextThemeWrapper(context, R.style.BranchDeepViewFragment);
         // Finally create the dialog:
-        return new Dialog(context, 0);
+        Dialog dialog = new Dialog(context, 0);
+        // Apply our background:
+        Drawable background = ContextCompat.getDrawable(context,
+                R.drawable.branch_deepview_background);
+        //noinspection ConstantConditions
+        dialog.getWindow().setBackgroundDrawable(background);
+        return dialog;
     }
 
     @Nullable
@@ -96,7 +114,9 @@ public class BranchDeepViewFragment extends DialogFragment {
 
         // App logo
         ImageView appIcon = view.findViewById(R.id.branch_deepview_app_icon);
-        if (appIcon != null) loadImage(appIcon, link.getAppIconUrl());
+        if (appIcon != null) {
+            loadImage(appIcon, link.getAppIconUrl(), R.dimen.branch_deepview_app_icon_corners);
+        }
 
         // Title
         TextView title = view.findViewById(R.id.branch_deepview_title);
@@ -117,19 +137,12 @@ public class BranchDeepViewFragment extends DialogFragment {
                 // which is not suitable for fullscreen images.
                 url = url.substring(0, url.length() - APP_ICON_URL_SMALL_SUFFIX.length());
             }
-            loadImage(image, url);
+            loadImage(image, url, R.dimen.branch_deepview_image_corners);
         }
 
         // Button
         Button button = view.findViewById(R.id.branch_deepview_button);
         if (button != null) {
-            int background = ContextCompat.getColor(getContext(),
-                    R.color.branch_deepview_button_background);
-            int text = ContextCompat.getColor(getContext(),
-                    R.color.branch_deepview_button_text);
-            button.getBackground().setColorFilter(background,
-                    PorterDuff.Mode.SRC_IN);
-            button.setTextColor(text);
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -163,7 +176,9 @@ public class BranchDeepViewFragment extends DialogFragment {
         }
     }
 
-    private void loadImage(@NonNull final ImageView imageView, @Nullable String url) {
+    private void loadImage(@NonNull final ImageView imageView,
+                           @Nullable String url,
+                           @DimenRes final int cornersRes) {
         CircularProgressDrawable progress = new CircularProgressDrawable(getContext());
         progress.setArrowEnabled(false);
         progress.setCenterRadius(getResources()
@@ -201,7 +216,13 @@ public class BranchDeepViewFragment extends DialogFragment {
                         imageView.post(new Runnable() {
                             @Override
                             public void run() {
-                                imageView.setImageBitmap(bitmap);
+                                if (cornersRes != 0) {
+                                    float corners = getResources().getDimension(cornersRes);
+                                    imageView.setImageDrawable(
+                                            new RoundedCornersDrawable(bitmap, corners));
+                                } else {
+                                    imageView.setImageBitmap(bitmap);
+                                }
                             }
                         });
                     } catch (Exception e) {
@@ -222,23 +243,74 @@ public class BranchDeepViewFragment extends DialogFragment {
         }
     }
 
-    public static class PercentImageView extends ImageView {
-        public PercentImageView(Context context) {
-            super(context);
+    private static class RoundedCornersDrawable extends Drawable {
+        private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        private final Path mPath = new Path();
+        private final float mCorners;
+        private final Bitmap mBitmap;
+        private final RectF mRect = new RectF();
+
+        private RoundedCornersDrawable(@NonNull Bitmap bitmap, float corners) {
+            mBitmap = bitmap;
+            mPaint.setShader(new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
+            mCorners = corners;
         }
 
+        @Override
+        public void setAlpha(int alpha) {
+            mPaint.setAlpha(alpha);
+        }
+
+        @Override
+        public void setColorFilter(@Nullable ColorFilter colorFilter) {
+            mPaint.setColorFilter(colorFilter);
+        }
+
+        @Override
+        public int getOpacity() {
+            return PixelFormat.TRANSLUCENT;
+        }
+
+        @Override
+        protected void onBoundsChange(Rect bounds) {
+            super.onBoundsChange(bounds);
+            mRect.left = bounds.left;
+            mRect.top = bounds.top;
+            mRect.right = bounds.right;
+            mRect.bottom = bounds.bottom;
+        }
+
+        @SuppressLint("CanvasSize")
+        @Override
+        public void draw(@NonNull Canvas canvas) {
+            float cornerX = mCorners * (float) getIntrinsicWidth() / canvas.getWidth();
+            float cornerY = mCorners * (float) getIntrinsicHeight() / canvas.getHeight();
+            float corner = Math.max(cornerX, cornerY);
+            mPath.rewind();
+            mPath.addRoundRect(mRect, corner, corner, Path.Direction.CW);
+            canvas.drawPath(mPath, mPaint);
+        }
+
+        @Override
+        public int getIntrinsicHeight() {
+            return mBitmap.getHeight();
+        }
+
+        @Override
+        public int getIntrinsicWidth() {
+            return mBitmap.getWidth();
+        }
+    }
+
+    public static class PercentImageView extends ImageView {
         public PercentImageView(Context context, @Nullable AttributeSet attrs) {
             super(context, attrs);
-        }
-
-        public PercentImageView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-            super(context, attrs, defStyleAttr);
         }
 
         @Override
         protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
             super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(
-                    (int) (0.4F * getResources().getDisplayMetrics().heightPixels),
+                    (int) (0.3F * getResources().getDisplayMetrics().heightPixels),
                     MeasureSpec.EXACTLY
             ));
         }

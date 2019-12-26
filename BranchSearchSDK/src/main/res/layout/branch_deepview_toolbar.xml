@@ -11,8 +11,8 @@
         android:id="@+id/branch_deepview_app_icon"
         android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
-        android:layout_width="24dp"
-        android:layout_height="24dp"/>
+        android:layout_width="@dimen/branch_deepview_app_icon_size"
+        android:layout_height="@dimen/branch_deepview_app_icon_size"/>
 
     <TextView
         android:id="@+id/branch_deepview_app_name"

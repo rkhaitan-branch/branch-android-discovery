@@ -1,10 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="branch_deepview_image_padding">8dp</dimen>
+    <dimen name="branch_deepview_corners">24dp</dimen>
+    <dimen name="branch_deepview_image_padding">16dp</dimen>
+    <dimen name="branch_deepview_image_corners">32dp</dimen>
+    <dimen name="branch_deepview_app_icon_size">24dp</dimen>
+    <dimen name="branch_deepview_app_icon_corners">4dp</dimen>
     <dimen name="branch_deepview_app_name_text">20sp</dimen>
     <dimen name="branch_deepview_title_text">20sp</dimen>
     <dimen name="branch_deepview_description_text">14sp</dimen>
     <dimen name="branch_deepview_button_description_text">12sp</dimen>
+    <dimen name="branch_deepview_button_text">16sp</dimen>
+    <dimen name="branch_deepview_button_elevation">0dp</dimen>
+    <dimen name="branch_deepview_button_corners">24dp</dimen>
+    <dimen name="branch_deepview_button_margin_top">8dp</dimen>
+    <dimen name="branch_deepview_button_margin_horizontal">16dp</dimen>
+    <dimen name="branch_deepview_button_margin_bottom">16dp</dimen>
     <dimen name="branch_deepview_loading_radius">16dp</dimen>
     <dimen name="branch_deepview_loading_stroke">4dp</dimen>
 </resources>
