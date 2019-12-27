@@ -1,4 +1,8 @@
 # Branch Android SDK change log
+- v1.4.2
+  * _*Master Release*_ - December 26, 2019
+  * Added native deepviews 
+
 - v1.4.1
   * _*Master Release*_ - December 16, 2019
   * Added the ability to pass 'extra' values
