@@ -179,7 +179,7 @@ public class BranchLinkResult implements Parcelable {
         registerClickEvent();
 
         // 1. Try to open the app as an Android shortcut
-        boolean success = false; // openAppWithAndroidShortcut(context);
+        boolean success = openAppWithAndroidShortcut(context);
 
         // 2. Try to open the app directly with URI Scheme
         if (!success) {
@@ -201,6 +201,20 @@ public class BranchLinkResult implements Parcelable {
             err = new BranchSearchError(BranchSearchError.ERR_CODE.ROUTING_ERR_UNABLE_TO_OPEN_APP);
         }
         return err;
+    }
+
+    private boolean openAppWithAndroidShortcut(@NonNull Context context) {
+        if (Build.VERSION.SDK_INT < 25) return false;
+        String id = getAndroidShortcutId();
+        if (id == null) return false;
+        try {
+            LauncherApps apps = context.getSystemService(LauncherApps.class);
+            apps.startShortcut(destination_store_id, id, null, null,
+                    Process.myUserHandle());
+            return true;
+        } catch (SecurityException e) {
+            return false;
+        }
     }
 
     private boolean openAppWithUriScheme(Context context) {
@@ -294,11 +308,12 @@ public class BranchLinkResult implements Parcelable {
                         | LauncherApps.ShortcutQuery.FLAG_MATCH_PINNED);
                 query.setPackage(appStoreId);
                 List<ShortcutInfo> shortcuts = launcherApps.getShortcuts(query, Process.myUserHandle());
-                if (shortcuts == null) return null;
-                for (ShortcutInfo shortcut : shortcuts) {
-                    if (shortcut.getId().equals(link.android_shortcut_id) && shortcut.isEnabled()) {
-                        found = true;
-                        break;
+                if (shortcuts != null) {
+                    for (ShortcutInfo shortcut : shortcuts) {
+                        if (shortcut.getId().equals(link.android_shortcut_id) && shortcut.isEnabled()) {
+                            found = true;
+                            break;
+                        }
                     }
                 }
             } catch (SecurityException | IllegalStateException e) {
