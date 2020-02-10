@@ -1,10 +1,15 @@
 package io.branch.search;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.LauncherApps;
+import android.content.pm.ShortcutInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.os.Process;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
@@ -12,6 +17,8 @@ import android.text.TextUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.List;
 
 /**
  * Class for representing a a deep link to content
@@ -29,6 +36,7 @@ public class BranchLinkResult implements Parcelable {
     private static final String LINK_ROUTING_MODE_KEY = "routing_mode";
     private static final String LINK_TRACKING_KEY = "click_tracking_link";
     private static final String LINK_RANKING_HINT_KEY = "ranking_hint";
+    private static final String LINK_ANDROID_SHORTCUT_ID_KEY = "android_shortcut_id";
 
     private String entity_id;
     private String name;
@@ -46,6 +54,7 @@ public class BranchLinkResult implements Parcelable {
     private String web_link;
     private String destination_store_id;
     private String click_tracking_url;
+    private String android_shortcut_id;
 
     private BranchLinkResult() {
     }
@@ -115,6 +124,16 @@ public class BranchLinkResult implements Parcelable {
     }
 
     /**
+     * Returns the shortcut id, or null if this link does not represent an Android launcher shortcut.
+     * To inspect the package, please see {@link #getDestinationPackageName()}.
+     * @return id or null
+     */
+    @Nullable
+    public String getAndroidShortcutId() {
+        return TextUtils.isEmpty(android_shortcut_id) ? null : android_shortcut_id;
+    }
+
+    /**
      * This method allows you to register a click event on the action, which informs Branch
      * which item was clicked, improving the rankings and personalization over time
      */
@@ -159,15 +178,20 @@ public class BranchLinkResult implements Parcelable {
     public BranchSearchError openContent(Context context, boolean fallbackToPlayStore) {
         registerClickEvent();
 
-        // 1. Try to open the app directly with URI Scheme
-        boolean success = openAppWithUriScheme(context);
+        // 1. Try to open the app as an Android shortcut
+        boolean success = false; // openAppWithAndroidShortcut(context);
 
-        // 2. If URI Scheme is not working try opening with the web link in browser
+        // 2. Try to open the app directly with URI Scheme
+        if (!success) {
+            success = openAppWithUriScheme(context);
+        }
+
+        // 3. If URI Scheme is not working try opening with the web link in browser
         if (!success) {
             success = openAppWithWebLink(context);
         }
 
-        // 3. Fallback to the playstore
+        // 4. Fallback to the playstore
         if (!success && fallbackToPlayStore) {
             success = openAppWithPlayStore(context);
         }
@@ -229,7 +253,8 @@ public class BranchLinkResult implements Parcelable {
         return isAppOpened;
     }
 
-    @NonNull
+    @SuppressLint("NewApi")
+    @Nullable
     static BranchLinkResult createFromJson(@NonNull JSONObject actionJson,
                                            @NonNull String appName,
                                            @NonNull String appStoreId,
@@ -253,6 +278,36 @@ public class BranchLinkResult implements Parcelable {
         link.destination_store_id = appStoreId;
 
         link.click_tracking_url = Util.optString(actionJson, LINK_TRACKING_KEY);
+        link.android_shortcut_id = Util.optString(actionJson, LINK_ANDROID_SHORTCUT_ID_KEY);
+        boolean hasShortcut = !TextUtils.isEmpty(link.android_shortcut_id);
+        if (hasShortcut && Build.VERSION.SDK_INT < 25) {
+            return null;
+        }
+        if (hasShortcut) {
+            Context appContext = BranchSearch.getInstance().getApplicationContext();
+            LauncherApps launcherApps = appContext.getSystemService(LauncherApps.class);
+            boolean found = false;
+            try {
+                LauncherApps.ShortcutQuery query = new LauncherApps.ShortcutQuery();
+                query.setQueryFlags(LauncherApps.ShortcutQuery.FLAG_MATCH_DYNAMIC
+                        | LauncherApps.ShortcutQuery.FLAG_MATCH_MANIFEST
+                        | LauncherApps.ShortcutQuery.FLAG_MATCH_PINNED);
+                query.setPackage(appStoreId);
+                List<ShortcutInfo> shortcuts = launcherApps.getShortcuts(query, Process.myUserHandle());
+                if (shortcuts == null) return null;
+                for (ShortcutInfo shortcut : shortcuts) {
+                    if (shortcut.getId().equals(link.android_shortcut_id) && shortcut.isEnabled()) {
+                        found = true;
+                        break;
+                    }
+                }
+            } catch (SecurityException | IllegalStateException e) {
+                // Not a launcher
+            }
+            if (!found) {
+                return null;
+            }
+        }
 
         return link;
     }
@@ -281,6 +336,7 @@ public class BranchLinkResult implements Parcelable {
         dest.writeString(this.web_link);
         dest.writeString(this.destination_store_id);
         dest.writeString(this.click_tracking_url);
+        dest.writeString(this.android_shortcut_id);
     }
 
 
@@ -306,6 +362,7 @@ public class BranchLinkResult implements Parcelable {
         this.web_link = in.readString();
         this.destination_store_id = in.readString();
         this.click_tracking_url = in.readString();
+        this.android_shortcut_id = in.readString();
     }
 
     public static final Creator<BranchLinkResult> CREATOR = new Creator<BranchLinkResult>() {
