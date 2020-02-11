@@ -76,9 +76,6 @@ public class BranchSearchError extends JSONObject {
         /** Unable to open the web url associated with the app. */
         ROUTING_ERR_UNABLE_TO_OPEN_WEB_URL,
 
-        /** Unable to open the Android shortcut associated with the link. */
-        ROUTING_ERR_UNABLE_TO_OPEN_ANDROID_SHORTCUT,
-
         /** Unable to open the Google Play Store for the app. */
         ROUTING_ERR_UNABLE_TO_OPEN_PS,
 

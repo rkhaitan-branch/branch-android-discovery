@@ -174,14 +174,12 @@ public class BranchLinkResult implements Parcelable {
         registerClickEvent();
 
         // 1. Try to open the app as an Android shortcut
-        // If it fails, we want to return an error instead of going on
         boolean success = openAppWithAndroidShortcut(context);
-        if (!success && getAndroidShortcutId() != null) {
-            return new BranchSearchError(BranchSearchError.ERR_CODE.ROUTING_ERR_UNABLE_TO_OPEN_ANDROID_SHORTCUT);
-        }
 
         // 2. Try to open the app directly with URI Scheme
-        success = openAppWithUriScheme(context);
+        if (!success) {
+            success = openAppWithUriScheme(context);
+        }
 
         // 3. If URI Scheme is not working try opening with the web link in browser
         if (!success) {
