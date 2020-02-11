@@ -260,8 +260,7 @@ public class BranchLinkResult implements Parcelable {
         return isAppOpened;
     }
 
-    @SuppressLint("NewApi")
-    @Nullable
+    @NonNull
     static BranchLinkResult createFromJson(@NonNull JSONObject actionJson,
                                            @NonNull String appName,
                                            @NonNull String appStoreId,

@@ -70,9 +70,7 @@ class BranchResponseParser {
                                     name,
                                     store_id,
                                     icon_url);
-                            if (link != null) {
-                                deepLinks.add(link);
-                            }
+                            deepLinks.add(link);
                         }
                     }
 
