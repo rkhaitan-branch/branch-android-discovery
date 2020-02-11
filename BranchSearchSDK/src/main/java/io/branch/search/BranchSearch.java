@@ -31,7 +31,6 @@ public class BranchSearch {
             = new URLConnectionNetworkHandler[Channel.values().length];
 
     private BranchConfiguration branchConfiguration;
-    private Context appContext;
 
 
     // Private Constructor.
@@ -130,7 +129,6 @@ public class BranchSearch {
 
         this.branchConfiguration = (config == null ? new BranchConfiguration() : config);
         this.branchConfiguration.setDefaults(context);
-        this.appContext = context.getApplicationContext();
     }
 
     // Undocumented
@@ -206,10 +204,4 @@ public class BranchSearch {
             return null;
         }
     }
-
-    @NonNull
-    Context getApplicationContext() {
-        return appContext;
-    }
-
 }
