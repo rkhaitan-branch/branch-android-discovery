@@ -34,7 +34,7 @@ public interface IBranchShortcutHandler {
                 apps.startShortcut(packageName, id, null, null,
                         Process.myUserHandle());
                 return true;
-            } catch (SecurityException e) {
+            } catch (Exception e) {
                 return false;
             }
         }
