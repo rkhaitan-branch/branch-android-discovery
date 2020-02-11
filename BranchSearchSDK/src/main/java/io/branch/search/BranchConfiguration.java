@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import org.json.JSONException;
@@ -31,6 +32,7 @@ public class BranchConfiguration {
     private String countryCode;
     private int intentFlags = Intent.FLAG_ACTIVITY_NEW_TASK;
     private final Map<String, Object> requestExtra = new HashMap<>();
+    private IBranchShortcutHandler shortcutHandler;
 
     // JSONKeys associated with a Configuration
     enum JSONKey {
@@ -77,6 +79,11 @@ public class BranchConfiguration {
         // Check to see if the configuration already has a valid country code.  Default if not.
         if (TextUtils.isEmpty(countryCode)) {
             this.countryCode = Util.getCountryCode(context);
+        }
+
+        // Check to see if the configuration already has a valid shortcut handler.  Default if not.
+        if (shortcutHandler == null) {
+            this.shortcutHandler = IBranchShortcutHandler.DEFAULT;
         }
 
         return this;
@@ -232,6 +239,27 @@ public class BranchConfiguration {
     @SuppressWarnings("WeakerAccess")
     public void addRequestExtra(@NonNull String key, @NonNull Object data) {
         requestExtra.put(key, data);
+    }
+
+    /**
+     * Override the default shortcut handler to validate and launch Shortcut results.
+     * @param shortcutHandler handler to use, or null to use the default
+     * @return this BranchConfiguration
+     */
+    @NonNull
+    public BranchConfiguration setShortcutHandler(@Nullable IBranchShortcutHandler shortcutHandler) {
+        this.shortcutHandler = shortcutHandler;
+        return this;
+    }
+
+    /**
+     * Returns the shortcut handler.
+     * @see #setShortcutHandler(IBranchShortcutHandler)
+     * @return the shortcut handler
+     */
+    @NonNull
+    public IBranchShortcutHandler getShortcutHandler() {
+        return shortcutHandler;
     }
 
     /**

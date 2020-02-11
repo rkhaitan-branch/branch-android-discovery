@@ -3,13 +3,10 @@ package io.branch.search;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.LauncherApps;
-import android.content.pm.ShortcutInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.os.Process;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
@@ -17,8 +14,6 @@ import android.text.TextUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.List;
 
 /**
  * Class for representing a a deep link to content
@@ -207,14 +202,10 @@ public class BranchLinkResult implements Parcelable {
         if (Build.VERSION.SDK_INT < 25) return false;
         String id = getAndroidShortcutId();
         if (id == null) return false;
-        try {
-            LauncherApps apps = context.getSystemService(LauncherApps.class);
-            apps.startShortcut(destination_store_id, id, null, null,
-                    Process.myUserHandle());
-            return true;
-        } catch (SecurityException e) {
-            return false;
-        }
+        IBranchShortcutHandler handler = BranchSearch.getInstance()
+                .getBranchConfiguration()
+                .getShortcutHandler();
+        return handler.launchShortcut(context, id, destination_store_id);
     }
 
     private boolean openAppWithUriScheme(Context context) {
@@ -294,36 +285,15 @@ public class BranchLinkResult implements Parcelable {
         link.click_tracking_url = Util.optString(actionJson, LINK_TRACKING_KEY);
         link.android_shortcut_id = Util.optString(actionJson, LINK_ANDROID_SHORTCUT_ID_KEY);
         boolean hasShortcut = !TextUtils.isEmpty(link.android_shortcut_id);
-        if (hasShortcut && Build.VERSION.SDK_INT < 25) {
-            return null;
-        }
-        if (hasShortcut) {
+        if (hasShortcut) { // Need to validate
             Context appContext = BranchSearch.getInstance().getApplicationContext();
-            LauncherApps launcherApps = appContext.getSystemService(LauncherApps.class);
-            boolean found = false;
-            try {
-                LauncherApps.ShortcutQuery query = new LauncherApps.ShortcutQuery();
-                query.setQueryFlags(LauncherApps.ShortcutQuery.FLAG_MATCH_DYNAMIC
-                        | LauncherApps.ShortcutQuery.FLAG_MATCH_MANIFEST
-                        | LauncherApps.ShortcutQuery.FLAG_MATCH_PINNED);
-                query.setPackage(appStoreId);
-                List<ShortcutInfo> shortcuts = launcherApps.getShortcuts(query, Process.myUserHandle());
-                if (shortcuts != null) {
-                    for (ShortcutInfo shortcut : shortcuts) {
-                        if (shortcut.getId().equals(link.android_shortcut_id) && shortcut.isEnabled()) {
-                            found = true;
-                            break;
-                        }
-                    }
-                }
-            } catch (SecurityException | IllegalStateException e) {
-                // Not a launcher
-            }
-            if (!found) {
+            IBranchShortcutHandler handler = BranchSearch.getInstance()
+                    .getBranchConfiguration()
+                    .getShortcutHandler();
+            if (!handler.validateShortcut(appContext, link.android_shortcut_id, appStoreId)) {
                 return null;
             }
         }
-
         return link;
     }
 
