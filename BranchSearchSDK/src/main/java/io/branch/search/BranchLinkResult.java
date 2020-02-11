@@ -283,6 +283,13 @@ public class BranchLinkResult implements Parcelable {
 
         link.click_tracking_url = Util.optString(actionJson, LINK_TRACKING_KEY);
         link.android_shortcut_id = Util.optString(actionJson, LINK_ANDROID_SHORTCUT_ID_KEY);
+        if (TextUtils.isEmpty(link.android_shortcut_id)) {
+            // Try with legacy keys.
+            JSONObject object = actionJson.optJSONObject("android_intent");
+            if (object != null) {
+                link.android_shortcut_id = Util.optString(object, "shortcut_id");
+            }
+        }
         return link;
     }
 
