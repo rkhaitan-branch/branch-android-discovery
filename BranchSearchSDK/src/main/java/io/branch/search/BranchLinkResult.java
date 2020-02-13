@@ -291,6 +291,16 @@ public class BranchLinkResult implements Parcelable {
                 link.android_shortcut_id = Util.optString(object, "shortcut_id");
             }
         }
+        boolean hasShortcut = !TextUtils.isEmpty(link.android_shortcut_id);
+        if (hasShortcut) { // Need to validate
+            Context appContext = BranchSearch.getInstance().getApplicationContext();
+            IBranchShortcutHandler handler = BranchSearch.getInstance()
+                    .getBranchConfiguration()
+                    .getShortcutHandler();
+            if (!handler.validateShortcut(appContext, link.android_shortcut_id, appStoreId)) {
+                return null;
+            }
+        }
         return link;
     }
 
