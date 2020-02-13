@@ -53,8 +53,8 @@ public interface IBranchShortcutHandler {
             if (!mCache.containsKey(id)) {
                 Context appContext = BranchSearch.getInstance().getApplicationContext();
                 LauncherApps launcherApps = appContext.getSystemService(LauncherApps.class);
-                Set<String> ids = new HashSet<>();
                 try {
+                    Set<String> ids = new HashSet<>();
                     LauncherApps.ShortcutQuery query = new LauncherApps.ShortcutQuery();
                     query.setQueryFlags(LauncherApps.ShortcutQuery.FLAG_MATCH_DYNAMIC
                             | LauncherApps.ShortcutQuery.FLAG_MATCH_MANIFEST
@@ -66,19 +66,23 @@ public interface IBranchShortcutHandler {
                             if (shortcut.isEnabled()) ids.add(shortcut.getId());
                         }
                     }
-                } catch (SecurityException | IllegalStateException e) {
-                    // Not a launcher
+                    mCache.put(packageName, ids);
+                } catch (Exception e) {
+                    // Not a launcher, not installed, invalid, ....
                 }
-                mCache.put(packageName, ids);
             }
-            //noinspection ConstantConditions
-            return mCache.get(packageName).contains(id);
+            if (mCache.containsKey(packageName)) {
+                //noinspection ConstantConditions
+                return mCache.get(packageName).contains(id);
+            } else {
+                return false;
+            }
         }
 
         @Override
         public boolean launchShortcut(@NonNull Context context,
-                                   @NonNull String id,
-                                   @NonNull String packageName) {
+                                      @NonNull String id,
+                                      @NonNull String packageName) {
             if (Build.VERSION.SDK_INT < 25) return false;
             try {
                 LauncherApps apps = context.getSystemService(LauncherApps.class);
