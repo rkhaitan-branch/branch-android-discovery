@@ -2,6 +2,8 @@ package io.branch.search;
 
 import android.content.Context;
 import android.content.pm.LauncherApps;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.pm.ShortcutInfo;
 import android.os.Build;
 import android.os.Process;
@@ -72,10 +74,21 @@ public interface IBranchShortcutHandler {
             }
             if (mCache.containsKey(packageName)) {
                 //noinspection ConstantConditions
-                return mCache.get(packageName).contains(id);
-            } else {
-                return false;
+                if (mCache.get(packageName).contains(id)) {
+                    // Could return true, but first confirm that package is (still) installed.
+                    // LauncherApps.getApplicationInfo() would work but is API 26+, so we're
+                    // using package manager to cover API 25.
+                    PackageManager manager = context.getPackageManager();
+                    try {
+                        PackageInfo info = manager.getPackageInfo(packageName, 0);
+                        if (info != null) return true;
+                    } catch (PackageManager.NameNotFoundException ignore) { }
+                    // Package has been uninstalled after we saved its cache.
+                    // Remove the entry so we re-query next time.
+                    mCache.remove(packageName);
+                }
             }
+            return false;
         }
 
         @Override
