@@ -238,12 +238,13 @@ public class BranchConfiguration {
 
     /**
      * Override the default shortcut handler to validate and launch Shortcut results.
-     * @param shortcutHandler handler to use, or null to use the default
+     * @param shortcutHandler handler to use
      * @return this BranchConfiguration
      */
+    @SuppressWarnings("WeakerAccess")
     @NonNull
-    public BranchConfiguration setShortcutHandler(@Nullable IBranchShortcutHandler shortcutHandler) {
-        this.shortcutHandler = shortcutHandler != null ? shortcutHandler : IBranchShortcutHandler.DEFAULT;
+    public BranchConfiguration setShortcutHandler(@NonNull IBranchShortcutHandler shortcutHandler) {
+        this.shortcutHandler = shortcutHandler;
         return this;
     }
 
