@@ -50,9 +50,8 @@ public interface IBranchShortcutHandler {
                                         @NonNull String id,
                                         @NonNull String packageName) {
             if (Build.VERSION.SDK_INT < 25) return false;
-            if (!mCache.containsKey(id)) {
-                Context appContext = BranchSearch.getInstance().getApplicationContext();
-                LauncherApps launcherApps = appContext.getSystemService(LauncherApps.class);
+            if (!mCache.containsKey(packageName)) {
+                LauncherApps launcherApps = context.getSystemService(LauncherApps.class);
                 try {
                     Set<String> ids = new HashSet<>();
                     LauncherApps.ShortcutQuery query = new LauncherApps.ShortcutQuery();
