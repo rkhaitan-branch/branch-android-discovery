@@ -1,4 +1,9 @@
 # Branch Android SDK change log
+
+- v1.5.0
+  * _*Master Release*_ - February 13, 2020
+  * Support for Android shortcuts
+   
 - v1.4.2
   * _*Master Release*_ - December 26, 2019
   * Added native deepviews 
