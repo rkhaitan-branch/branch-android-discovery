@@ -2,7 +2,7 @@
 
 - v1.5.1
   * _*Master Release*_ - February 14, 2020
-  * Fixed bug with Android shortcuts after uninstalling the app
+  * Fixed bugs with Android shortcuts
   
 - v1.5.0
   * _*Master Release*_ - February 13, 2020
