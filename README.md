@@ -277,3 +277,19 @@ And here are the actual codes and corresponding root causes:
 | ROUTING_ERR_UNABLE_TO_OPEN_WEB_URL | Unable to open the web url associated with the app. |
 | ROUTING_ERR_UNABLE_TO_OPEN_PS | Unable to open the Google Play Store for the app. |
 | ROUTING_ERR_UNABLE_TO_COMPLETE_ACTION | An unknown error happened. Unable to open the app. |
+
+## Special Shortcut Handling (for non-Launchers)
+
+_This section only applies to Android clients that are not Launchers_
+
+Some shortcut links returned by Branch can only be opened by a launcher. To open such links, the Branch Discovery SDK utilizes a permission for interacting with the [LauncherApps Service](https://developer.android.com/reference/android/content/pm/LauncherApps) that Android grants the default launcher. If the SDK determines that it does not have this permission, it will not include these shortcut links in the search results. If your client has alternate access to the LauncherApps Service, you may override how the SDK handles these shortcut links.
+
+#### IBranchShortcutHandler Interface
+
+Branch provides an easy way to override how the SDK accesses the LauncherApps Service via the `io.branch.search.IBranchShortcutHandler` interface. You can create a class that implements this interface and set your class as the shortcut handler via `setShortcutHandler` method in your `BranchConfiguration`. The `IBranchShortcutHandler` interface  has 2 methods you will implement:
+
+| Method | Return Type | Description |
+| - | - | - |
+| validateShortcut | boolean | Validates whether shortcut with given `id` and `package` name is valid. Should return `true` if the specified shortcut is active. |
+| launchShortcut | boolean | Attempts to launch shortcut with given `id` and `package` name. Should return `true` if shortcut is successfully launched. |
+
