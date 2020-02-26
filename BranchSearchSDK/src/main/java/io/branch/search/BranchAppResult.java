@@ -3,6 +3,7 @@ package io.branch.search;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +23,7 @@ public class BranchAppResult implements Parcelable {
 
     BranchAppResult(String appStoreID, String appName, String appIconUrl,
                     BranchLinkResult searchDeepLink,
-                    String rankingHint,
+                    @NonNull String rankingHint,
                     float score,
                     ArrayList<BranchLinkResult> deep_links) {
         this.app_store_id = appStoreID;
@@ -58,8 +59,18 @@ public class BranchAppResult implements Parcelable {
     /**
      * @return the Ranking Hint.
      */
+    @NonNull
     public String getRankingHint() {
         return this.ranking_hint;
+    }
+
+    /**
+     * Returns true if this link represents an ad.
+     * @return true if ad, false otherwise
+     */
+    @SuppressWarnings("unused")
+    public boolean isAd() {
+        return ranking_hint.toLowerCase().startsWith("featured");
     }
 
     /**

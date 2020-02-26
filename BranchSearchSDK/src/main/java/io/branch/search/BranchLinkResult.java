@@ -90,6 +90,7 @@ public class BranchLinkResult implements Parcelable {
         return metadata;
     }
 
+    @NonNull
     public String getRankingHint() {
         return ranking_hint;
     }
@@ -98,6 +99,7 @@ public class BranchLinkResult implements Parcelable {
      * Returns true if this link represents an ad.
      * @return true if ad, false otherwise
      */
+    @SuppressWarnings("unused")
     public boolean isAd() {
         return ranking_hint.toLowerCase().startsWith("featured");
     }
