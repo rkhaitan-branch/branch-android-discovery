@@ -94,6 +94,14 @@ public class BranchLinkResult implements Parcelable {
         return ranking_hint;
     }
 
+    /**
+     * Returns true if this link represents an ad.
+     * @return true if ad, false otherwise
+     */
+    public boolean isAd() {
+        return ranking_hint.toLowerCase().startsWith("featured");
+    }
+
     public String getRoutingMode() {
         return routing_mode;
     }
