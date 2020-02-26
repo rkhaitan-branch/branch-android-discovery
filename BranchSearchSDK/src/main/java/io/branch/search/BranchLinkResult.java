@@ -284,6 +284,7 @@ public class BranchLinkResult implements Parcelable {
         link.app_icon_url = appIconUrl;
         link.ranking_hint = Util.optString(actionJson, LINK_RANKING_HINT_KEY);
         link.metadata = actionJson.optJSONObject(LINK_METADATA_KEY);
+        if (link.metadata == null) link.metadata = new JSONObject();
 
         link.routing_mode = Util.optString(actionJson, LINK_ROUTING_MODE_KEY);
         link.uri_scheme = Util.optString(actionJson, LINK_URI_SCHEME_KEY);
@@ -345,12 +346,12 @@ public class BranchLinkResult implements Parcelable {
         this.image_url = in.readString();
         this.app_name = in.readString();
         this.app_icon_url = in.readString();
+        this.ranking_hint = in.readString();
         try {
             this.metadata = new JSONObject(in.readString());
         } catch (JSONException e) {
             this.metadata = new JSONObject();
         }
-        this.ranking_hint = in.readString();
 
         this.routing_mode = in.readString();
         this.uri_scheme = in.readString();
