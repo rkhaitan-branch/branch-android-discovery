@@ -1,4 +1,7 @@
 # Branch Android SDK change log
+- v1.5.2
+  * _*Master Release*_ - February 27, 2020
+  * Added a method to determine if a result is an ad
 
 - v1.5.1
   * _*Master Release*_ - February 14, 2020
