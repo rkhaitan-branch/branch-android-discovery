@@ -80,11 +80,6 @@ public class BranchConfiguration {
             fetchBranchKey(context);
         }
 
-        // Check to see if we have a valid GAID. Fetch if not.
-        if (!hasValidGAID()) {
-            fetchGAID();
-        }
-
         // Check to see if the configuration already has a valid country code. Default if not.
         if (!hasValidCountryCode()) {
             setCountryCode(Util.getCountryCode(context));
@@ -94,6 +89,10 @@ public class BranchConfiguration {
         if (!hasValidUrl()) {
             setUrl(BranchSearchInterface.BRANCH_SEARCH_URL);
         }
+
+        // Refetch GAID even if we have a valid one. It might have changed
+        // and it's not an expensive call anyway because of our SYNC_TIME_MILLIS.
+        fetchGAID();
 
         lastSyncTimeMillis = System.currentTimeMillis();
     }
@@ -118,13 +117,6 @@ public class BranchConfiguration {
      */
     private boolean hasValidCountryCode() {
         return !TextUtils.isEmpty(countryCode);
-    }
-
-    /**
-     * @return true if the Google Ad ID is valid.
-     */
-    private boolean hasValidGAID() {
-        return !TextUtils.isEmpty(googleAdID);
     }
 
     /**
