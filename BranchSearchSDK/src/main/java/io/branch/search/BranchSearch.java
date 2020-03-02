@@ -32,6 +32,7 @@ public class BranchSearch {
             = new URLConnectionNetworkHandler[Channel.values().length];
 
     private BranchConfiguration branchConfiguration;
+    private BranchDeviceInfo branchDeviceInfo;
     private Context appContext;
 
     /**
@@ -50,10 +51,7 @@ public class BranchSearch {
      * @return this BranchSearch instance.
      */
     public static BranchSearch init(@NonNull Context context, @NonNull BranchConfiguration config) {
-        thisInstance = new BranchSearch(context, config);
-
-        // Initialize Device Information that doesn't change
-        BranchDeviceInfo.init(context);
+        thisInstance = new BranchSearch(context, config, new BranchDeviceInfo(context));
 
         // Ensure that there is a valid key
         boolean valid = config.ensureValid(context);
@@ -75,9 +73,12 @@ public class BranchSearch {
         return thisInstance;
     }
 
-    private BranchSearch(@NonNull Context context, @NonNull BranchConfiguration config) {
+    private BranchSearch(@NonNull Context context,
+                         @NonNull BranchConfiguration config,
+                         @NonNull BranchDeviceInfo info) {
         this.appContext = context.getApplicationContext();
         this.branchConfiguration = config;
+        this.branchDeviceInfo = info;
 
         // We need a network handler for each protocol.
         for (Channel channel : Channel.values()) {
@@ -101,7 +102,7 @@ public class BranchSearch {
      * @return true if the request was posted
      */
     public boolean query(BranchSearchRequest request, IBranchSearchEvents callback) {
-        return BranchSearchInterface.Search(request, branchConfiguration, callback);
+        return BranchSearchInterface.Search(request, callback);
     }
 
     /**
@@ -111,7 +112,7 @@ public class BranchSearch {
      */
     @SuppressWarnings("UnusedReturnValue")
     public boolean queryHint(final IBranchQueryResults callback) {
-        return BranchSearchInterface.QueryHint(new BranchQueryHintRequest(), branchConfiguration, callback);
+        return BranchSearchInterface.QueryHint(new BranchQueryHintRequest(), callback);
     }
 
     /**
@@ -123,7 +124,7 @@ public class BranchSearch {
      */
     @SuppressWarnings("UnusedReturnValue")
     public boolean autoSuggest(BranchSearchRequest request, final IBranchQueryResults callback) {
-        return BranchSearchInterface.AutoSuggest(request, branchConfiguration, callback);
+        return BranchSearchInterface.AutoSuggest(request, callback);
     }
 
     // Package Private
@@ -137,6 +138,11 @@ public class BranchSearch {
     //  our behavior might change/break/be undefined.
     public final BranchConfiguration getBranchConfiguration() {
         return branchConfiguration;
+    }
+
+    @NonNull
+    BranchDeviceInfo getBranchDeviceInfo() {
+        return branchDeviceInfo;
     }
 
     /**

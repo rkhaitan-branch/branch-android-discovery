@@ -20,14 +20,15 @@ class BranchSearchInterface {
             = URLConnectionNetworkHandler.initialize();
 
     static boolean Search(final BranchSearchRequest request,
-                          final BranchConfiguration configuration,
                           final IBranchSearchEvents callback) {
         final BranchSearch search = BranchSearch.getInstance();
         if (search == null) {
             return false;
         }
 
-        JSONObject jsonPayload = createPayload(request, configuration);
+        final BranchConfiguration configuration = search.getBranchConfiguration();
+        final BranchDeviceInfo deviceInfo = search.getBranchDeviceInfo();
+        JSONObject jsonPayload = createPayload(request, configuration, deviceInfo);
 
         search.getNetworkHandler(BranchSearch.Channel.SEARCH).executePost(configuration.getUrl(), jsonPayload, new IURLConnectionEvents() {
             @Override
@@ -63,14 +64,15 @@ class BranchSearchInterface {
     }
 
     static boolean AutoSuggest(final BranchSearchRequest request,
-                               final BranchConfiguration configuration,
                                final IBranchQueryResults callback) {
         BranchSearch search = BranchSearch.getInstance();
         if (search == null) {
             return false;
         }
 
-        JSONObject jsonPayload = createPayload(request, configuration);
+        final BranchConfiguration configuration = search.getBranchConfiguration();
+        final BranchDeviceInfo deviceInfo = search.getBranchDeviceInfo();
+        JSONObject jsonPayload = createPayload(request, configuration, deviceInfo);
 
         search.getNetworkHandler(BranchSearch.Channel.AUTOSUGGEST).executePost(BRANCH_AUTOSUGGEST_URL, jsonPayload, new IURLConnectionEvents() {
             @Override
@@ -91,14 +93,15 @@ class BranchSearchInterface {
 
 
     static boolean QueryHint(final BranchQueryHintRequest request,
-                             final BranchConfiguration configuration,
                              final IBranchQueryResults callback) {
         BranchSearch search = BranchSearch.getInstance();
         if (search == null) {
             return false;
         }
 
-        JSONObject jsonPayload = createPayload(request, configuration);
+        final BranchConfiguration configuration = search.getBranchConfiguration();
+        final BranchDeviceInfo deviceInfo = search.getBranchDeviceInfo();
+        JSONObject jsonPayload = createPayload(request, configuration, deviceInfo);
 
         search.getNetworkHandler(BranchSearch.Channel.QUERYHINT).executePost(BRANCH_QUERYHINT_URL, jsonPayload, new IURLConnectionEvents() {
             @Override
@@ -137,17 +140,23 @@ class BranchSearchInterface {
         });
     }
 
-    static JSONObject createPayload(BranchSearchRequest request, BranchConfiguration configuration) {
+    @NonNull
+    static JSONObject createPayload(@NonNull BranchSearchRequest request,
+                                    @NonNull BranchConfiguration configuration,
+                                    @NonNull BranchDeviceInfo info) {
         JSONObject jsonPayload = request.convertToJson();
-        BranchDeviceInfo.addDeviceInfo(jsonPayload);
+        info.addDeviceInfo(jsonPayload);
         configuration.addConfigurationInfo(jsonPayload);
 
         return jsonPayload;
     }
 
-    static JSONObject createPayload(BranchQueryHintRequest request, BranchConfiguration configuration) {
+    @NonNull
+    static JSONObject createPayload(@NonNull BranchQueryHintRequest request,
+                                    @NonNull BranchConfiguration configuration,
+                                    @NonNull BranchDeviceInfo info) {
         JSONObject jsonPayload = request.convertToJson();
-        BranchDeviceInfo.addDeviceInfo(jsonPayload);
+        info.addDeviceInfo(jsonPayload);
         configuration.addConfigurationInfo(jsonPayload);
 
         return jsonPayload;

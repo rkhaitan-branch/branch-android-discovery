@@ -2,6 +2,7 @@ package io.branch.search;
 
 import android.content.Context;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
@@ -16,12 +17,13 @@ import java.util.Locale;
 /**
  * Branch DeviceInfo.
  */
-public class BranchDeviceInfo {
+class BranchDeviceInfo {
     private static final String UNKNOWN_CARRIER = "bnc_no_value";
+    private static final String DEFAULT_LOCALE = "en-US";
 
-    private static String _carrierName = UNKNOWN_CARRIER;
-    private static DisplayMetrics _displayMetrics;
-    private static Locale _locale;
+    private String carrierName = UNKNOWN_CARRIER;
+    private DisplayMetrics displayMetrics = null;
+    private String locale = DEFAULT_LOCALE;
 
     enum JSONKey {
         Brand("brand"),
@@ -37,10 +39,11 @@ public class BranchDeviceInfo {
         ScreenWidth("screen_width"),
         ScreenHeight("screen_height");
 
-        JSONKey(String key) {
+        JSONKey(@NonNull String key) {
             _key = key;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return _key;
@@ -49,10 +52,34 @@ public class BranchDeviceInfo {
         private String _key;
     }
 
-    static void init(Context context) {
-        initCarrierCheck(context);
-        initDisplayMetrics(context);
-        initLocale(context);
+    BranchDeviceInfo(@NonNull Context context) {
+        // Check for carrier name.
+        try {
+            TelephonyManager manager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            carrierName = manager.getNetworkOperatorName();
+        } catch (Exception ignore) { }
+        if (TextUtils.isEmpty(carrierName)) {
+            carrierName = UNKNOWN_CARRIER;
+        }
+
+        // Check for display metrics.
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        if (windowManager != null) { // Not sure how this could ever be null.
+            displayMetrics = new DisplayMetrics();
+            Display display = windowManager.getDefaultDisplay();
+            display.getMetrics(displayMetrics);
+        }
+
+        // Check for locale.
+        Locale locale;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            locale = context.getResources().getConfiguration().getLocales().get(0);
+        } else {
+            locale = context.getResources().getConfiguration().locale;
+        }
+        if (locale != null) {
+            this.locale = Util.getLocaleString(locale);
+        }
     }
 
     /**
@@ -61,7 +88,8 @@ public class BranchDeviceInfo {
      * @return A value containing the hardware manufacturer of the current device.
      * @see <a href="http://developer.android.com/reference/android/os/Build.html#MANUFACTURER">Build.MANUFACTURER</a>
      */
-    private static String getBrand() {
+    @NonNull
+    private String getBrand() {
         return android.os.Build.MANUFACTURER;
     }
 
@@ -71,15 +99,14 @@ public class BranchDeviceInfo {
      * @return A value containing the hardware model of the current device.
      * @see <a href="http://developer.android.com/reference/android/os/Build.html#MODEL">Build.MODEL</a>
      */
-    private static String getModel() {
+    @NonNull
+    private String getModel() {
         return android.os.Build.MODEL;
     }
 
-    private static String getLocale() {
-        if (_locale != null) {
-            return Util.getLocaleString(_locale);
-        }
-        return "en-US";
+    @NonNull
+    private String getLocale() {
+        return locale;
     }
 
     /**
@@ -99,7 +126,7 @@ public class BranchDeviceInfo {
      * current device.
      * @see <a href="http://developer.android.com/guide/topics/manifest/uses-sdk-element.html#ApiLevels">Android Developers - API Level and Platform Version</a>
      */
-    private static int getOSVersion() {
+    private int getOSVersion() {
         return android.os.Build.VERSION.SDK_INT;
     }
 
@@ -109,49 +136,15 @@ public class BranchDeviceInfo {
      * @return A value containing the name of current registered operator.
      * @see <a href="https://developer.android.com/reference/android/telephony/TelephonyManager.html#getNetworkOperatorName()">Carrier</a>
      */
-    private static String getCarrier() {
-        return _carrierName;
-    }
-
-    private static void initCarrierCheck(Context context) {
-
-        try {
-            if (context != null) {
-                TelephonyManager manager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-                _carrierName = manager.getNetworkOperatorName();
-            }
-        } catch (Exception e) {
-        }
-
-        if (TextUtils.isEmpty(_carrierName)) {
-            _carrierName = UNKNOWN_CARRIER;
-        }
-    }
-
-    private static void initDisplayMetrics(Context context) {
-        _displayMetrics = new DisplayMetrics();
-        if (context != null) {
-            WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-            if (windowManager != null) {
-                Display display = windowManager.getDefaultDisplay();
-                display.getMetrics(_displayMetrics);
-            }
-        }
-    }
-
-    private static void initLocale(Context context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
-            _locale = context.getResources().getConfiguration().getLocales().get(0);
-        } else{
-            //noinspection deprecation
-            _locale = context.getResources().getConfiguration().locale;
-        }
+    @NonNull
+    private String getCarrier() {
+        return carrierName;
     }
 
     /**
      * Add Device Information to a JSON object.
      */
-    public static void addDeviceInfo(JSONObject jsonObject) {
+    void addDeviceInfo(JSONObject jsonObject) {
         addDeviceInfo(jsonObject, JSONKey.Brand.toString(), getBrand());
         addDeviceInfo(jsonObject, JSONKey.Carrier.toString(), getCarrier());
         addDeviceInfo(jsonObject, JSONKey.Locale.toString(), getLocale());
@@ -161,17 +154,17 @@ public class BranchDeviceInfo {
         addDeviceInfo(jsonObject, JSONKey.SDK.toString(), "discovery_android");
         addDeviceInfo(jsonObject, JSONKey.SDKVersion.toString(), BranchSearch.getVersion());
 
-        if (_displayMetrics != null) {
-            addDeviceInfo(jsonObject, JSONKey.ScreenDpi.toString(), _displayMetrics.densityDpi);
-            addDeviceInfo(jsonObject, JSONKey.ScreenWidth.toString(), _displayMetrics.widthPixels);
-            addDeviceInfo(jsonObject, JSONKey.ScreenHeight.toString(), _displayMetrics.heightPixels);
+        if (displayMetrics != null) {
+            addDeviceInfo(jsonObject, JSONKey.ScreenDpi.toString(), displayMetrics.densityDpi);
+            addDeviceInfo(jsonObject, JSONKey.ScreenWidth.toString(), displayMetrics.widthPixels);
+            addDeviceInfo(jsonObject, JSONKey.ScreenHeight.toString(), displayMetrics.heightPixels);
         }
     }
 
     private static <T> void addDeviceInfo(JSONObject jsonObject, String key, T value) {
         try {
             jsonObject.put(key, value);
-        } catch (JSONException e) {
+        } catch (JSONException ignore) {
         }
     }
 }

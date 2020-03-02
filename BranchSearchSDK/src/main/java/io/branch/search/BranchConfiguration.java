@@ -85,7 +85,7 @@ public class BranchConfiguration {
 
         // Check to see if the configuration already has a valid country code. Default if not.
         if (!hasValidCountryCode()) {
-            this.countryCode = Util.getCountryCode(context);
+            setCountryCode(Util.getCountryCode(context));
         }
 
         // We're invalid if the Branch Key is invalid.
