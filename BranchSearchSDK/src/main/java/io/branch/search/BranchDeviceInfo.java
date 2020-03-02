@@ -1,6 +1,8 @@
 package io.branch.search;
 
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -31,6 +33,8 @@ class BranchDeviceInfo {
     private String carrierName = UNKNOWN_CARRIER;
     private DisplayMetrics displayMetrics = null;
     private String locale = DEFAULT_LOCALE;
+    private String appPackage = null;
+    private String appVersion = null;
 
     private long lastSyncTimeMillis = 0L;
     private final Object syncLock = new Object();
@@ -44,6 +48,9 @@ class BranchDeviceInfo {
         Locale("locale"),
         SDK("sdk"),
         SDKVersion("sdk_version"),
+
+        AppPackage("app_package"),
+        AppVersion("app_version"),
 
         ScreenDpi("screen_dpi"),
         ScreenWidth("screen_width"),
@@ -104,6 +111,15 @@ class BranchDeviceInfo {
             this.locale = DEFAULT_LOCALE;
         }
 
+        // Check for app version and package.
+        appPackage = context.getPackageName();
+        try {
+            PackageInfo info = context.getPackageManager().getPackageInfo(appPackage, 0);
+            appVersion = info.versionName;
+        } catch (PackageManager.NameNotFoundException ignore) {
+            // Can't happen.
+        }
+
         lastSyncTimeMillis = System.currentTimeMillis();
     }
 
@@ -132,6 +148,16 @@ class BranchDeviceInfo {
     @NonNull
     private String getLocale() {
         return locale;
+    }
+
+    @Nullable
+    private String getAppPackage() {
+        return appPackage;
+    }
+
+    @Nullable
+    private String getAppVersion() {
+        return appVersion;
     }
 
     /**
@@ -198,6 +224,14 @@ class BranchDeviceInfo {
             addDeviceInfo(jsonObject, JSONKey.ScreenDpi.toString(), displayMetrics.densityDpi);
             addDeviceInfo(jsonObject, JSONKey.ScreenWidth.toString(), displayMetrics.widthPixels);
             addDeviceInfo(jsonObject, JSONKey.ScreenHeight.toString(), displayMetrics.heightPixels);
+        }
+        String appPackage = getAppPackage();
+        String appVersion = getAppVersion();
+        if (appPackage != null) {
+            addDeviceInfo(jsonObject, JSONKey.AppPackage.toString(), appPackage);
+        }
+        if (appVersion != null) {
+            addDeviceInfo(jsonObject, JSONKey.AppVersion.toString(), appVersion);
         }
     }
 
