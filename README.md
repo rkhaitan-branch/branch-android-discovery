@@ -242,6 +242,7 @@ Branch will also return relevant content to the user query. These are deep links
 | getName | String | Gets the title of the content for display |
 | getDescription | String | Gets the description of the content for display |
 | getImageUrl | String | Gets the URL of the content image for display |
+| isAd | boolean | Is this link an advertisement -- e.g. a sponsored result | 
 | | | |
 | openContent(Context, boolean fallbackToPlayStore) | BranchSearchError | Branch is great at deep link routing, so we wanted to abstract away this complexity from you. When a user taps on an action, you simply need to call `completeAction()` to trigger the user to be routed to the content or website. |
 | openDeepView(FragmentManager) | BranchSearchError | Opens the link into a [Branch Deepview](https://branch.io/deepviews/). The content preview will be rendered inside a in-app web view with the option to download the app from the play store. |
