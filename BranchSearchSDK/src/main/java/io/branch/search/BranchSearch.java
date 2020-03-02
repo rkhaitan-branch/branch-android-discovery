@@ -51,17 +51,16 @@ public class BranchSearch {
      * @return this BranchSearch instance.
      */
     public static BranchSearch init(@NonNull Context context, @NonNull BranchConfiguration config) {
-        thisInstance = new BranchSearch(context, config, new BranchDeviceInfo(context));
+        thisInstance = new BranchSearch(context, config, new BranchDeviceInfo());
 
         // Ensure that there is a valid key
-        boolean valid = config.sync(context);
-        if (!valid) {
+        // TODO why would we return null here (making getInstance() nullable and crashing later
+        //  in unexpected ways) instead of crashing with a clear message? We need a key to work!
+        //  Our code would also be more elegant since we could crash during config.sync().
+        if (!config.hasValidKey()) {
             Log.e(TAG, "Invalid Branch Key.");
-            // TODO why would we return null here (making getInstance() nullable and crashing later
-            //  in unexpected ways) instead of crashing with a clear message? We need a key to work!
             thisInstance = null;
         }
-
         return thisInstance;
     }
 
@@ -84,6 +83,10 @@ public class BranchSearch {
         for (Channel channel : Channel.values()) {
             this.networkHandlers[channel.ordinal()] = URLConnectionNetworkHandler.initialize();
         }
+
+        // Sync the objects that we were given.
+        config.sync(context);
+        info.sync(context);
     }
 
     /**

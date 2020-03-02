@@ -3,6 +3,7 @@ package io.branch.search;
 import android.content.Context;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
@@ -20,10 +21,12 @@ import java.util.Locale;
 class BranchDeviceInfo {
     private static final String UNKNOWN_CARRIER = "bnc_no_value";
     private static final String DEFAULT_LOCALE = "en-US";
+    private static final long SYNC_TIME_MILLIS = 1000 * 60 * 60; // 1 hour
 
     private String carrierName = UNKNOWN_CARRIER;
     private DisplayMetrics displayMetrics = null;
     private String locale = DEFAULT_LOCALE;
+    private long lastSyncTimeMillis = 0L;
 
     enum JSONKey {
         Brand("brand"),
@@ -52,14 +55,12 @@ class BranchDeviceInfo {
         private String _key;
     }
 
-    BranchDeviceInfo(@NonNull Context context) {
-        sync(context);
+    BranchDeviceInfo() {
     }
 
     /**
      * Ensure that this object is in a valid state and updated.
      * Some values might be identical but some others might change.
-     *
      * @param context a context
      */
     void sync(@NonNull Context context) {
@@ -95,6 +96,8 @@ class BranchDeviceInfo {
         } else {
             this.locale = DEFAULT_LOCALE;
         }
+
+        lastSyncTimeMillis = System.currentTimeMillis();
     }
 
     /**
@@ -159,7 +162,15 @@ class BranchDeviceInfo {
     /**
      * Add Device Information to a JSON object.
      */
-    void addDeviceInfo(JSONObject jsonObject) {
+    void addDeviceInfo(@NonNull JSONObject jsonObject) {
+        // Anytime we're being used, see if we should re-sync.
+        long now = System.currentTimeMillis();
+        if (now > lastSyncTimeMillis + SYNC_TIME_MILLIS) {
+            Context context = BranchSearch.getInstance().getApplicationContext();
+            sync(context);
+        }
+
+        // Write.
         addDeviceInfo(jsonObject, JSONKey.Brand.toString(), getBrand());
         addDeviceInfo(jsonObject, JSONKey.Carrier.toString(), getCarrier());
         addDeviceInfo(jsonObject, JSONKey.Locale.toString(), getLocale());
@@ -168,7 +179,6 @@ class BranchDeviceInfo {
         addDeviceInfo(jsonObject, JSONKey.OS.toString(), "ANDROID");
         addDeviceInfo(jsonObject, JSONKey.SDK.toString(), "discovery_android");
         addDeviceInfo(jsonObject, JSONKey.SDKVersion.toString(), BranchSearch.getVersion());
-
         if (displayMetrics != null) {
             addDeviceInfo(jsonObject, JSONKey.ScreenDpi.toString(), displayMetrics.densityDpi);
             addDeviceInfo(jsonObject, JSONKey.ScreenWidth.toString(), displayMetrics.widthPixels);
@@ -176,7 +186,9 @@ class BranchDeviceInfo {
         }
     }
 
-    private static <T> void addDeviceInfo(JSONObject jsonObject, String key, T value) {
+    private static <T> void addDeviceInfo(@NonNull JSONObject jsonObject,
+                                          @NonNull String key,
+                                          @Nullable T value) {
         try {
             jsonObject.put(key, value);
         } catch (JSONException ignore) {

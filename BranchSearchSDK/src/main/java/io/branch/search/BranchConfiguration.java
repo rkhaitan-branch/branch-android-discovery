@@ -9,6 +9,7 @@ import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.google.android.gms.ads.identifier.AdvertisingIdClient;
 
@@ -27,10 +28,12 @@ import java.util.Map;
  */
 public class BranchConfiguration {
     final static String MANIFEST_KEY = "io.branch.sdk.BranchKey";
+    private static final long SYNC_TIME_MILLIS = 1000 * 60 * 60; // 1 hour
+
+    private long lastSyncTimeMillis = 0L;
 
     private String url = BranchSearchInterface.BRANCH_SEARCH_URL;
     private String key;
-
     private String googleAdID = null;
     private boolean isLat = false;
     private Locale locale; // Overrides BranchDeviceInfo
@@ -68,11 +71,10 @@ public class BranchConfiguration {
     }
 
     /**
-     * Update this configuration to defaults.
-     * Returns false if this config is not usable, which means Branch Key is invalid.
-     * @param context Context
+     * Update this object to default values, fetching them if necessary.
+     * @param context a context
      */
-    boolean sync(@NonNull Context context) {
+    void sync(@NonNull Context context) {
         // Check to see if the configuration already has a valid branch key. Fetch if not.
         if (!hasValidKey()) {
             fetchBranchKey(context);
@@ -88,14 +90,13 @@ public class BranchConfiguration {
             setCountryCode(Util.getCountryCode(context));
         }
 
-        // We're invalid if the Branch Key is invalid.
-        return hasValidKey();
+        lastSyncTimeMillis = System.currentTimeMillis();
     }
 
     /**
      * @return true if the Branch Key is valid.
      */
-    private boolean hasValidKey() {
+    boolean hasValidKey() {
         return (this.key != null && this.key.startsWith("key_live"));
     }
 
@@ -267,11 +268,15 @@ public class BranchConfiguration {
                     AdvertisingIdClient.Info adInfo = AdvertisingIdClient.getAdvertisingIdInfo(context);
                     config.setGoogleAdID(adInfo != null ? adInfo.getId() : null);
                     config.limitAdTracking(adInfo != null && adInfo.isLimitAdTrackingEnabled());
-                } catch (Exception ignore) {
-                } catch (NoClassDefFoundError ignore) {
+                } catch (Exception e) {
+                    Log.i("BranchConfiguration", "Got exception: "
+                            + e.getClass().getName() + " with message: "
+                            + e.getMessage());
+                } catch (NoClassDefFoundError e) {
                     // This is thrown if no gms base library is on our classpath, ignore it.
                     // NOTE: This should never happen unless the library is explicitly removed from
-                    // our dependency, or in case of bad AAR implementation.
+                    // our dependency or in case of bad AAR implementation.
+                    Log.i("BranchConfiguration", "Could not find the play-services lib.");
                 }
                 return null;
             }
@@ -317,16 +322,23 @@ public class BranchConfiguration {
     /**
      * Add Configuration Information to a JSON object.
      */
-    JSONObject addConfigurationInfo(JSONObject jsonObject) {
+    void addConfigurationInfo(@NonNull JSONObject jsonObject) {
+        // Anytime we're being used, see if we should re-sync.
+        long now = System.currentTimeMillis();
+        if (now > lastSyncTimeMillis + SYNC_TIME_MILLIS) {
+            Context context = BranchSearch.getInstance().getApplicationContext();
+            sync(context);
+        }
+
+        // Write.
         try {
             jsonObject.putOpt(JSONKey.BranchKey.toString(), getBranchKey());
             jsonObject.putOpt(JSONKey.Country.toString(), countryCode);
-
             if (locale != null) {
                 jsonObject.putOpt(JSONKey.Locale.toString(), locale.getDisplayName());
             }
 
-            // Pass the GAID, but also pass the LAT flag.
+            // Pass the GAID and the LAT flag.
             jsonObject.putOpt(JSONKey.GAID.toString(), getGoogleAdID());
             jsonObject.putOpt(JSONKey.LAT.toString(), (isAdTrackingLimited() ? 1 : 0));
 
@@ -348,7 +360,6 @@ public class BranchConfiguration {
 
         } catch (JSONException ignore) {
         }
-        return jsonObject;
     }
 
 
