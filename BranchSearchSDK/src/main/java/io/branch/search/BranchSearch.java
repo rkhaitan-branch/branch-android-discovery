@@ -5,6 +5,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 
@@ -13,7 +14,7 @@ import com.google.android.gms.ads.identifier.AdvertisingIdClient;
 import java.lang.ref.WeakReference;
 
 /**
- * Main entry class for Branch Discovery. This class need to initialized before accessing any Branch
+ * Main entry class for Branch Discovery. This class need to be initialized before accessing any Branch
  * discovery functionality.
  *
  * Note that Branch Discovery needs location permission for better discovery experience. Please make sure
@@ -33,11 +34,6 @@ public class BranchSearch {
     private BranchConfiguration branchConfiguration;
     private Context appContext;
 
-
-    // Private Constructor.
-    private BranchSearch() {
-    }
-
     /**
      * Initialize the BranchSearch SDK with the default configuration options.
      * @param context Context
@@ -54,8 +50,7 @@ public class BranchSearch {
      * @return this BranchSearch instance.
      */
     public static BranchSearch init(@NonNull Context context, @NonNull BranchConfiguration config) {
-        thisInstance = new BranchSearch();
-        thisInstance.initialize(context, config);
+        thisInstance = new BranchSearch(context, config);
 
         // Initialize Device Information that doesn't change
         BranchDeviceInfo.init(context);
@@ -63,6 +58,8 @@ public class BranchSearch {
         // Ensure that there is a valid key
         if (!thisInstance.branchConfiguration.hasValidKey()) {
             Log.e(TAG, "Invalid Branch Key.");
+            // TODO why would we return null (making getInstance() nullable and crashing later
+            //  in unexpected ways) instead of crashing with a clear message? We need a key to work!
             thisInstance = null;
         }
 
@@ -77,10 +74,24 @@ public class BranchSearch {
         return thisInstance;
     }
 
+    private BranchSearch(@NonNull Context context, @NonNull BranchConfiguration config) {
+        new getGAIDTask(context).execute();
+
+        // We need a network handler for each protocol.
+        for (Channel channel : Channel.values()) {
+            this.networkHandlers[channel.ordinal()] = URLConnectionNetworkHandler.initialize();
+        }
+
+        this.branchConfiguration = config;
+        this.branchConfiguration.ensureValid(context);
+        this.appContext = context.getApplicationContext();
+    }
+
     /**
      * Get the BranchSearch Version.
      * @return this BranchSearch Build version
      */
+    @NonNull
     public static String getVersion() {
         return BuildConfig.VERSION_NAME;
     }
@@ -100,6 +111,7 @@ public class BranchSearch {
      * @param callback {@link IBranchQueryResults} Callback to receive results.
      * @return true if the request was posted.
      */
+    @SuppressWarnings("UnusedReturnValue")
     public boolean queryHint(final IBranchQueryResults callback) {
         return BranchSearchInterface.QueryHint(new BranchQueryHintRequest(), branchConfiguration, callback);
     }
@@ -111,6 +123,7 @@ public class BranchSearch {
      * @param callback {@link IBranchQueryResults} Callback to receive results.
      * @return true if the request was posted.
      */
+    @SuppressWarnings("UnusedReturnValue")
     public boolean autoSuggest(BranchSearchRequest request, final IBranchQueryResults callback) {
         return BranchSearchInterface.AutoSuggest(request, branchConfiguration, callback);
     }
@@ -118,19 +131,6 @@ public class BranchSearch {
     // Package Private
     URLConnectionNetworkHandler getNetworkHandler(Channel channel) {
         return this.networkHandlers[channel.ordinal()];
-    }
-
-    private void initialize(@NonNull Context context, final BranchConfiguration config) {
-        new getGAIDTask(context).execute();
-
-        // We need a network handler for each protocol.
-        for (Channel channel : Channel.values()) {
-            this.networkHandlers[channel.ordinal()] = URLConnectionNetworkHandler.initialize();
-        }
-
-        this.branchConfiguration = (config == null ? new BranchConfiguration() : config);
-        this.branchConfiguration.ensureValid(context);
-        this.appContext = context.getApplicationContext();
     }
 
     // Undocumented

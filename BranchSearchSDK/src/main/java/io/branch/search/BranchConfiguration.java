@@ -203,7 +203,7 @@ public class BranchConfiguration {
     /**
      * @return true if the Branch Key is valid.
      */
-    private boolean hasValidKey() {
+    boolean hasValidKey() {
         return (this.key != null && this.key.startsWith("key_live"));
     }
 
