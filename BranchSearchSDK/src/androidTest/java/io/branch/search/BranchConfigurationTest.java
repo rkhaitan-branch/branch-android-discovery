@@ -21,12 +21,14 @@ public class BranchConfigurationTest extends BranchTest {
         // Before Initialization, everything should be null
         Assert.assertNull(config.getBranchKey());
         Assert.assertNull(config.getCountryCode());
+        Assert.assertNull(config.getUrl());
 
         config.sync(getTestContext());
 
         // After Initialization, everything should be set
         Assert.assertNotNull(config.getBranchKey());
         Assert.assertNotNull(config.getCountryCode());
+        Assert.assertNotNull(config.getUrl());
     }
 
     @Test

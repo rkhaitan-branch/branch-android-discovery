@@ -32,8 +32,8 @@ public class BranchConfiguration {
 
     private long lastSyncTimeMillis = 0L;
 
-    private String url = BranchSearchInterface.BRANCH_SEARCH_URL;
-    private String key;
+    private String url = null;
+    private String key = null;
     private String googleAdID = null;
     private boolean isLat = false;
     private Locale locale; // Overrides BranchDeviceInfo
@@ -90,12 +90,25 @@ public class BranchConfiguration {
             setCountryCode(Util.getCountryCode(context));
         }
 
+        // Check to see if the configuration already has a valid url. Default if not.
+        if (!hasValidUrl()) {
+            setUrl(BranchSearchInterface.BRANCH_SEARCH_URL);
+        }
+
         lastSyncTimeMillis = System.currentTimeMillis();
+    }
+
+    /**
+     * @return true if the url is valid.
+     */
+    private boolean hasValidUrl() {
+        return !TextUtils.isEmpty(url);
     }
 
     /**
      * @return true if the Branch Key is valid.
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     boolean hasValidKey() {
         return (this.key != null && this.key.startsWith("key_live"));
     }
@@ -121,12 +134,11 @@ public class BranchConfiguration {
      */
     @NonNull
     public BranchConfiguration setUrl(@Nullable String url) {
-        this.url = url != null ? url : BranchSearchInterface.BRANCH_SEARCH_URL;
+        this.url = url;
         return this;
     }
 
     // Package Private
-    @NonNull
     String getUrl() {
         return this.url;
     }

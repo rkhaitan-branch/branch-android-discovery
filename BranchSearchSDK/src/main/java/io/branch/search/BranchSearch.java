@@ -54,9 +54,9 @@ public class BranchSearch {
         thisInstance = new BranchSearch(context, config, new BranchDeviceInfo());
 
         // Ensure that there is a valid key
-        // TODO why would we return null here (making getInstance() nullable and crashing later
-        //  in unexpected ways) instead of crashing with a clear message? We need a key to work!
-        //  Our code would also be more elegant since we could crash during config.sync().
+        // TODO dev gave us a bad key. why would we return null here (making getInstance() nullable
+        //  and crashing later in unexpected ways) instead of crashing with a clear message?
+        //  We need a key to work! Our code would also be more elegant since we could crash in config.sync().
         if (!config.hasValidKey()) {
             Log.e(TAG, "Invalid Branch Key.");
             thisInstance = null;
