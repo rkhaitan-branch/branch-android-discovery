@@ -31,7 +31,9 @@ class BranchDeviceInfo {
     private String carrierName = UNKNOWN_CARRIER;
     private DisplayMetrics displayMetrics = null;
     private String locale = DEFAULT_LOCALE;
+
     private long lastSyncTimeMillis = 0L;
+    private final Object syncLock = new Object();
 
     enum JSONKey {
         Brand("brand"),
@@ -169,14 +171,17 @@ class BranchDeviceInfo {
      */
     void addDeviceInfo(@NonNull JSONObject jsonObject) {
         // Anytime we're being used, see if we should re-sync.
-        long now = System.currentTimeMillis();
-        if (now > lastSyncTimeMillis + SYNC_TIME_MILLIS) {
-            BranchSearch search = BranchSearch.getInstance();
-            if (search != null) {
-                sync(search.getApplicationContext());
-            } else {
-                // Object being used but BranchSearch not initialized.
-                // This can happen in tests. Ignore.
+        // Synchronize just in case someone fires requests from different threads at once.
+        synchronized (syncLock) {
+            long now = System.currentTimeMillis();
+            if (now > lastSyncTimeMillis + SYNC_TIME_MILLIS) {
+                BranchSearch search = BranchSearch.getInstance();
+                if (search != null) {
+                    sync(search.getApplicationContext());
+                } else {
+                    // Object being used but BranchSearch not initialized.
+                    // This can happen in tests. Ignore.
+                }
             }
         }
 
