@@ -129,7 +129,7 @@ public class BranchSearch {
         }
 
         this.branchConfiguration = (config == null ? new BranchConfiguration() : config);
-        this.branchConfiguration.setDefaults(context);
+        this.branchConfiguration.ensureValid(context);
         this.appContext = context.getApplicationContext();
     }
 

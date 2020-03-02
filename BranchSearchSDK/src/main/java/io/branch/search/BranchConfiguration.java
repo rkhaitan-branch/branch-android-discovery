@@ -23,7 +23,7 @@ import java.util.Map;
 public class BranchConfiguration {
     final static String MANIFEST_KEY = "io.branch.sdk.BranchKey";
 
-    private String url;
+    private String url = BranchSearchInterface.BRANCH_SEARCH_URL;
     private String key;
 
     private String googleAdID;
@@ -41,13 +41,15 @@ public class BranchConfiguration {
         GAID("gaid"),
         LAT("is_lat"),
         /** matches {@link BranchDiscoveryRequest.JSONKey#Extra} */
-        RequestExtra("extra_data"),
-        Locale(BranchDeviceInfo.JSONKey.Locale.toString()); ///< Configuration overrides DeviceInfo
+        RequestExtra(BranchDiscoveryRequest.JSONKey.Extra.toString()),
+        /** overrides {@link BranchDeviceInfo.JSONKey#Locale} */
+        Locale(BranchDeviceInfo.JSONKey.Locale.toString());
 
-        JSONKey(String key) {
+        JSONKey(@NonNull String key) {
             _key = key;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return _key;
@@ -64,16 +66,10 @@ public class BranchConfiguration {
      * Update this configuration to defaults.
      * @param context Context
      */
-    BranchConfiguration setDefaults(Context context) {
-
-        // Check to see if the configuration already has a URL endpoint.  Default if not.
-        if (TextUtils.isEmpty(url)) {
-            this.url = BranchSearchInterface.BRANCH_SEARCH_URL;
-        }
-
+    boolean ensureValid(@NonNull Context context) {
         // Check to see if the configuration already has a valid branch key.  Default if not.
         if (!hasValidKey()) {
-            setBranchKey(context);
+            fetchBranchKey(context);
         }
 
         // Check to see if the configuration already has a valid country code.  Default if not.
@@ -81,7 +77,8 @@ public class BranchConfiguration {
             this.countryCode = Util.getCountryCode(context);
         }
 
-        return this;
+        // If we still don't have a valid key, signal to the caller.
+        return hasValidKey();
     }
 
     /**
@@ -89,12 +86,14 @@ public class BranchConfiguration {
      * @param url URL to use, or null to use the default
      * @return this BranchConfiguration
      */
-    public BranchConfiguration setUrl(String url) {
-        this.url = url;
+    @NonNull
+    public BranchConfiguration setUrl(@Nullable String url) {
+        this.url = url != null ? url : BranchSearchInterface.BRANCH_SEARCH_URL;
         return this;
     }
 
     // Package Private
+    @NonNull
     String getUrl() {
         return this.url;
     }
@@ -104,7 +103,9 @@ public class BranchConfiguration {
      * @param key Key to use, or null to use the default
      * @return this BranchConfiguration
      */
-    public BranchConfiguration setBranchKey(String key) {
+    @SuppressWarnings("UnusedReturnValue")
+    @NonNull
+    public BranchConfiguration setBranchKey(@Nullable String key) {
         this.key = key;
         return this;
     }
@@ -115,6 +116,8 @@ public class BranchConfiguration {
      * @param flags The flags to set
      * @return this BranchConfiguration
      */
+    @SuppressWarnings("UnusedReturnValue")
+    @NonNull
     public BranchConfiguration setLaunchIntentFlags(int flags) {
         this.intentFlags = flags;
         return this;
@@ -145,6 +148,7 @@ public class BranchConfiguration {
     /**
      * @return the Key.
      */
+    @Nullable
     String getBranchKey() {
         return this.key;
     }
@@ -154,7 +158,9 @@ public class BranchConfiguration {
      * @param id Google Ad ID
      * @return this BranchConfiguration
      */
-    BranchConfiguration setGoogleAdID(String id) {
+    @SuppressWarnings("UnusedReturnValue")
+    @NonNull
+    BranchConfiguration setGoogleAdID(@Nullable String id) {
         this.googleAdID = id;
         return this;
     }
@@ -162,6 +168,8 @@ public class BranchConfiguration {
     /**
      * @return the Google Ad Id.
      */
+    @SuppressWarnings("WeakerAccess")
+    @Nullable
     String getGoogleAdID() {
         return this.googleAdID;
     }
@@ -171,17 +179,11 @@ public class BranchConfiguration {
      * @param locale Locale.
      * @return this BranchConfiguration
      */
-    BranchConfiguration setLocale(Locale locale) {
+    @SuppressWarnings("UnusedReturnValue")
+    @NonNull
+    BranchConfiguration setLocale(@Nullable Locale locale) {
         this.locale = locale;
         return this;
-    }
-
-    /**
-     * @return the Locale.
-     * Note that for a locale, this looks like "en-US"
-     */
-    Locale getLocale() {
-        return this.locale;
     }
 
     /**
@@ -201,7 +203,7 @@ public class BranchConfiguration {
     /**
      * @return true if the Branch Key is valid.
      */
-    boolean hasValidKey() {
+    private boolean hasValidKey() {
         return (this.key != null && this.key.startsWith("key_live"));
     }
 
@@ -209,18 +211,17 @@ public class BranchConfiguration {
      * Set the Branch Key from the Package Manager Metadata.
      * @param context Context
      */
-    private void setBranchKey(Context context) {
-        String branch_key = null;
+    private void fetchBranchKey(@NonNull Context context) {
+        String key = null;
         try {
             final ApplicationInfo ai = context.getPackageManager()
                     .getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
             if (ai.metaData != null) {
-                branch_key = ai.metaData.getString(MANIFEST_KEY);
+                key = ai.metaData.getString(MANIFEST_KEY);
             }
         } catch (final Exception ignore) {
         }
-
-        this.key = branch_key;
+        setBranchKey(key);
     }
 
     /**
@@ -241,7 +242,7 @@ public class BranchConfiguration {
      * @param shortcutHandler handler to use
      * @return this BranchConfiguration
      */
-    @SuppressWarnings("WeakerAccess")
+    @SuppressWarnings({"WeakerAccess", "unused"})
     @NonNull
     public BranchConfiguration setShortcutHandler(@NonNull IBranchShortcutHandler shortcutHandler) {
         this.shortcutHandler = shortcutHandler;
@@ -253,6 +254,7 @@ public class BranchConfiguration {
      * @see #setShortcutHandler(IBranchShortcutHandler)
      * @return the shortcut handler
      */
+    @SuppressWarnings("WeakerAccess")
     @NonNull
     public IBranchShortcutHandler getShortcutHandler() {
         return shortcutHandler;
