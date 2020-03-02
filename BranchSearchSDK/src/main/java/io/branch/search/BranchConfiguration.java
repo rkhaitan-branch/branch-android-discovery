@@ -49,7 +49,7 @@ public class BranchConfiguration {
         GAID("gaid"),
         LAT("is_lat"),
         /** matches {@link BranchDiscoveryRequest.JSONKey#Extra} */
-        RequestExtra(BranchDiscoveryRequest.JSONKey.Extra.toString()),
+        RequestExtra("extra_data"),
         /** overrides {@link BranchDeviceInfo.JSONKey#Locale} */
         Locale(BranchDeviceInfo.JSONKey.Locale.toString());
 
@@ -326,8 +326,13 @@ public class BranchConfiguration {
         // Anytime we're being used, see if we should re-sync.
         long now = System.currentTimeMillis();
         if (now > lastSyncTimeMillis + SYNC_TIME_MILLIS) {
-            Context context = BranchSearch.getInstance().getApplicationContext();
-            sync(context);
+            BranchSearch search = BranchSearch.getInstance();
+            if (search != null) {
+                sync(search.getApplicationContext());
+            } else {
+                // Object being used but BranchSearch not initialized.
+                // This can happen in tests. Ignore.
+            }
         }
 
         // Write.

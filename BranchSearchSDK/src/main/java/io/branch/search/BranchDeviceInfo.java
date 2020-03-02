@@ -17,6 +17,11 @@ import java.util.Locale;
 
 /**
  * Branch DeviceInfo.
+ *
+ * Just like {@link BranchConfiguration}, this class must be synced before using through
+ * {@link #sync(Context)}. The class will also sync automatically anytime it's used in
+ * {@link #addDeviceInfo(JSONObject)}, with a 1-hour interval between checks.
+ * This ensures that information here is always up to date.
  */
 class BranchDeviceInfo {
     private static final String UNKNOWN_CARRIER = "bnc_no_value";
@@ -166,8 +171,13 @@ class BranchDeviceInfo {
         // Anytime we're being used, see if we should re-sync.
         long now = System.currentTimeMillis();
         if (now > lastSyncTimeMillis + SYNC_TIME_MILLIS) {
-            Context context = BranchSearch.getInstance().getApplicationContext();
-            sync(context);
+            BranchSearch search = BranchSearch.getInstance();
+            if (search != null) {
+                sync(search.getApplicationContext());
+            } else {
+                // Object being used but BranchSearch not initialized.
+                // This can happen in tests. Ignore.
+            }
         }
 
         // Write.
