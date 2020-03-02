@@ -53,6 +53,16 @@ class BranchDeviceInfo {
     }
 
     BranchDeviceInfo(@NonNull Context context) {
+        sync(context);
+    }
+
+    /**
+     * Ensure that this object is in a valid state and updated.
+     * Some values might be identical but some others might change.
+     *
+     * @param context a context
+     */
+    void sync(@NonNull Context context) {
         // Check for carrier name.
         try {
             TelephonyManager manager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
@@ -64,10 +74,13 @@ class BranchDeviceInfo {
 
         // Check for display metrics.
         WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        if (windowManager != null) { // Not sure how this could ever be null.
+        if (windowManager != null) {
             displayMetrics = new DisplayMetrics();
             Display display = windowManager.getDefaultDisplay();
             display.getMetrics(displayMetrics);
+        } else {
+            // Not sure how this could ever happen.
+            displayMetrics = null;
         }
 
         // Check for locale.
@@ -79,6 +92,8 @@ class BranchDeviceInfo {
         }
         if (locale != null) {
             this.locale = Util.getLocaleString(locale);
+        } else {
+            this.locale = DEFAULT_LOCALE;
         }
     }
 

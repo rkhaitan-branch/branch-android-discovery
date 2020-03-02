@@ -54,7 +54,7 @@ public class BranchSearch {
         thisInstance = new BranchSearch(context, config, new BranchDeviceInfo(context));
 
         // Ensure that there is a valid key
-        boolean valid = config.ensureValid(context);
+        boolean valid = config.sync(context);
         if (!valid) {
             Log.e(TAG, "Invalid Branch Key.");
             // TODO why would we return null here (making getInstance() nullable and crashing later

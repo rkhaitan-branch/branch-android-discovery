@@ -72,7 +72,7 @@ public class BranchConfiguration {
      * Returns false if this config is not usable, which means Branch Key is invalid.
      * @param context Context
      */
-    boolean ensureValid(@NonNull Context context) {
+    boolean sync(@NonNull Context context) {
         // Check to see if the configuration already has a valid branch key. Fetch if not.
         if (!hasValidKey()) {
             fetchBranchKey(context);
