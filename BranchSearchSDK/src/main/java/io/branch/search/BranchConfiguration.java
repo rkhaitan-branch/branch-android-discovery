@@ -1,16 +1,21 @@
 package io.branch.search;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import com.google.android.gms.ads.identifier.AdvertisingIdClient;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -26,9 +31,9 @@ public class BranchConfiguration {
     private String url = BranchSearchInterface.BRANCH_SEARCH_URL;
     private String key;
 
-    private String googleAdID;
-    private boolean is_lat;
-    private Locale locale;      ///< Override BranchDeviceInfo
+    private String googleAdID = null;
+    private boolean isLat = false;
+    private Locale locale; // Overrides BranchDeviceInfo
     private String countryCode;
     private int intentFlags = Intent.FLAG_ACTIVITY_NEW_TASK;
     private final Map<String, Object> requestExtra = new HashMap<>();
@@ -64,21 +69,48 @@ public class BranchConfiguration {
 
     /**
      * Update this configuration to defaults.
+     * Returns false if this config is not usable, which means Branch Key is invalid.
      * @param context Context
      */
     boolean ensureValid(@NonNull Context context) {
-        // Check to see if the configuration already has a valid branch key.  Default if not.
+        // Check to see if the configuration already has a valid branch key. Fetch if not.
         if (!hasValidKey()) {
             fetchBranchKey(context);
         }
 
-        // Check to see if the configuration already has a valid country code.  Default if not.
-        if (TextUtils.isEmpty(countryCode)) {
+        // Check to see if we have a valid GAID. Fetch if not.
+        if (!hasValidGAID()) {
+            fetchGAID();
+        }
+
+        // Check to see if the configuration already has a valid country code. Default if not.
+        if (!hasValidCountryCode()) {
             this.countryCode = Util.getCountryCode(context);
         }
 
-        // If we still don't have a valid key, signal to the caller.
+        // We're invalid if the Branch Key is invalid.
         return hasValidKey();
+    }
+
+    /**
+     * @return true if the Branch Key is valid.
+     */
+    private boolean hasValidKey() {
+        return (this.key != null && this.key.startsWith("key_live"));
+    }
+
+    /**
+     * @return true if the country code is valid.
+     */
+    private boolean hasValidCountryCode() {
+        return !TextUtils.isEmpty(countryCode);
+    }
+
+    /**
+     * @return true if the Google Ad ID is valid.
+     */
+    private boolean hasValidGAID() {
+        return !TextUtils.isEmpty(googleAdID);
     }
 
     /**
@@ -133,7 +165,7 @@ public class BranchConfiguration {
      * @param limit true to limit
      */
     void limitAdTracking(boolean limit) {
-        is_lat = limit;
+        isLat = limit;
     }
 
     /**
@@ -142,7 +174,7 @@ public class BranchConfiguration {
      */
     @SuppressWarnings("WeakerAccess")
     boolean isAdTrackingLimited() {
-        return this.is_lat;
+        return this.isLat;
     }
 
     /**
@@ -191,7 +223,9 @@ public class BranchConfiguration {
      * @param cc Country Code
      * @return this BranchConfiguration
      */
-    BranchConfiguration setCountryCode(String cc) {
+    @SuppressWarnings("UnusedReturnValue")
+    @NonNull
+    BranchConfiguration setCountryCode(@Nullable String cc) {
         this.countryCode = cc;
         return this;
     }
@@ -201,14 +235,7 @@ public class BranchConfiguration {
     }
 
     /**
-     * @return true if the Branch Key is valid.
-     */
-    boolean hasValidKey() {
-        return (this.key != null && this.key.startsWith("key_live"));
-    }
-
-    /**
-     * Set the Branch Key from the Package Manager Metadata.
+     * Retrieves the Branch Key from the Package Manager Metadata.
      * @param context Context
      */
     private void fetchBranchKey(@NonNull Context context) {
@@ -222,6 +249,33 @@ public class BranchConfiguration {
         } catch (final Exception ignore) {
         }
         setBranchKey(key);
+    }
+
+    /**
+     * Retrieves the Google Ad ID from the play-services library.
+     * Note that this is the only place where the dependency for play-services-ads is needed.
+     */
+    @SuppressLint("StaticFieldLeak")
+    private void fetchGAID() {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                try {
+                    BranchSearch search = BranchSearch.getInstance();
+                    Context context = search.getApplicationContext();
+                    BranchConfiguration config = search.getBranchConfiguration();
+                    AdvertisingIdClient.Info adInfo = AdvertisingIdClient.getAdvertisingIdInfo(context);
+                    config.setGoogleAdID(adInfo != null ? adInfo.getId() : null);
+                    config.limitAdTracking(adInfo != null && adInfo.isLimitAdTrackingEnabled());
+                } catch (Exception ignore) {
+                } catch (NoClassDefFoundError ignore) {
+                    // This is thrown if no gms base library is on our classpath, ignore it.
+                    // NOTE: This should never happen unless the library is explicitly removed from
+                    // our dependency, or in case of bad AAR implementation.
+                }
+                return null;
+            }
+        }.execute();
     }
 
     /**

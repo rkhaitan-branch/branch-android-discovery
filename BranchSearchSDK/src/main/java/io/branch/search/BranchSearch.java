@@ -56,9 +56,10 @@ public class BranchSearch {
         BranchDeviceInfo.init(context);
 
         // Ensure that there is a valid key
-        if (!thisInstance.branchConfiguration.hasValidKey()) {
+        boolean valid = config.ensureValid(context);
+        if (!valid) {
             Log.e(TAG, "Invalid Branch Key.");
-            // TODO why would we return null (making getInstance() nullable and crashing later
+            // TODO why would we return null here (making getInstance() nullable and crashing later
             //  in unexpected ways) instead of crashing with a clear message? We need a key to work!
             thisInstance = null;
         }
@@ -75,16 +76,13 @@ public class BranchSearch {
     }
 
     private BranchSearch(@NonNull Context context, @NonNull BranchConfiguration config) {
-        new getGAIDTask(context).execute();
+        this.appContext = context.getApplicationContext();
+        this.branchConfiguration = config;
 
         // We need a network handler for each protocol.
         for (Channel channel : Channel.values()) {
             this.networkHandlers[channel.ordinal()] = URLConnectionNetworkHandler.initialize();
         }
-
-        this.branchConfiguration = config;
-        this.branchConfiguration.ensureValid(context);
-        this.appContext = context.getApplicationContext();
     }
 
     /**
@@ -134,6 +132,9 @@ public class BranchSearch {
     }
 
     // Undocumented
+    // TODO This should not be public! Once the user creates a configuration and initializes
+    //  the SDK, he should not be able to change the configuration values while we're running, or
+    //  our behavior might change/break/be undefined.
     public final BranchConfiguration getBranchConfiguration() {
         return branchConfiguration;
     }
@@ -176,35 +177,6 @@ public class BranchSearch {
     public static void isServiceEnabled(@NonNull String branchKey,
                                         @NonNull IBranchServiceEnabledEvents callback) {
         BranchSearchInterface.ServiceEnabled(branchKey, callback);
-    }
-
-    /**
-     * Note that this is the only place where the dependency for play-services-ads is needed.
-     */
-    private static class getGAIDTask extends AsyncTask<Void, Void, Void> {
-        private final WeakReference<Context> mContextReference;
-
-        getGAIDTask(Context context) {
-            mContextReference = new WeakReference<>(context);
-        }
-
-        @Override
-        protected Void doInBackground(Void... unused) {
-            try {
-                Context context = mContextReference.get();
-                if (context != null) {
-                    AdvertisingIdClient.Info adInfo = AdvertisingIdClient.getAdvertisingIdInfo(context);
-                    getInstance().branchConfiguration.setGoogleAdID(adInfo != null
-                            ? adInfo.getId() : null);
-                    getInstance().branchConfiguration.limitAdTracking(adInfo != null
-                            && adInfo.isLimitAdTrackingEnabled());
-                }
-            } catch (Exception ignore) {
-            } catch (NoClassDefFoundError ignore) {
-                // This is thrown if no gms base library is on our classpath, ignore it
-            }
-            return null;
-        }
     }
 
     @NonNull
