@@ -3,15 +3,9 @@ package io.branch.search;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.util.Log;
-
-import com.google.android.gms.ads.identifier.AdvertisingIdClient;
-
-import java.lang.ref.WeakReference;
 
 /**
  * Main entry class for Branch Discovery. This class need to be initialized before accessing any Branch
@@ -53,6 +47,10 @@ public class BranchSearch {
     public static BranchSearch init(@NonNull Context context, @NonNull BranchConfiguration config) {
         thisInstance = new BranchSearch(context, config, new BranchDeviceInfo());
 
+        // Initialize BranchSearch objects.
+        thisInstance.branchDeviceInfo.sync(thisInstance.getApplicationContext());
+        thisInstance.branchConfiguration.sync(thisInstance.getApplicationContext());
+
         // Ensure that there is a valid key
         // TODO dev gave us a bad key. why would we return null here (making getInstance() nullable
         //  and crashing later in unexpected ways) instead of crashing with a clear message?
@@ -83,10 +81,6 @@ public class BranchSearch {
         for (Channel channel : Channel.values()) {
             this.networkHandlers[channel.ordinal()] = URLConnectionNetworkHandler.initialize();
         }
-
-        // Sync the objects that we were given.
-        config.sync(context);
-        info.sync(context);
     }
 
     /**
