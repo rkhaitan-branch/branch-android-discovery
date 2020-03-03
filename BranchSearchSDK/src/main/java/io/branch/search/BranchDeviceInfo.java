@@ -1,7 +1,11 @@
 package io.branch.search;
 
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
@@ -15,13 +19,25 @@ import java.util.Locale;
 
 /**
  * Branch DeviceInfo.
+ *
+ * Just like {@link BranchConfiguration}, this class must be synced before using through
+ * {@link #sync(Context)}. The class will also sync automatically anytime it's used in
+ * {@link #addDeviceInfo(JSONObject)}, with a 1-hour interval between checks.
+ * This ensures that information here is always up to date.
  */
-public class BranchDeviceInfo {
+class BranchDeviceInfo {
     private static final String UNKNOWN_CARRIER = "bnc_no_value";
+    private static final String DEFAULT_LOCALE = "en-US";
+    private static final long SYNC_TIME_MILLIS = 1000 * 60 * 60; // 1 hour
 
-    private static String _carrierName = UNKNOWN_CARRIER;
-    private static DisplayMetrics _displayMetrics;
-    private static Locale _locale;
+    private String carrierName = UNKNOWN_CARRIER;
+    private DisplayMetrics displayMetrics = null;
+    private String locale = DEFAULT_LOCALE;
+    private String appPackage = null;
+    private String appVersion = null;
+
+    private long lastSyncTimeMillis = 0L;
+    private final Object syncLock = new Object();
 
     enum JSONKey {
         Brand("brand"),
@@ -33,14 +49,18 @@ public class BranchDeviceInfo {
         SDK("sdk"),
         SDKVersion("sdk_version"),
 
+        AppPackage("app_package"),
+        AppVersion("app_version"),
+
         ScreenDpi("screen_dpi"),
         ScreenWidth("screen_width"),
         ScreenHeight("screen_height");
 
-        JSONKey(String key) {
+        JSONKey(@NonNull String key) {
             _key = key;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return _key;
@@ -49,10 +69,58 @@ public class BranchDeviceInfo {
         private String _key;
     }
 
-    static void init(Context context) {
-        initCarrierCheck(context);
-        initDisplayMetrics(context);
-        initLocale(context);
+    BranchDeviceInfo() {
+    }
+
+    /**
+     * Ensure that this object is in a valid state and updated.
+     * Some values might be identical but some others might change.
+     * @param context a context
+     */
+    void sync(@NonNull Context context) {
+        // Check for carrier name.
+        try {
+            TelephonyManager manager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            carrierName = manager.getNetworkOperatorName();
+        } catch (Exception ignore) { }
+        if (TextUtils.isEmpty(carrierName)) {
+            carrierName = UNKNOWN_CARRIER;
+        }
+
+        // Check for display metrics.
+        // Apparently the display can be null in some cases.
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display;
+        if (windowManager != null && (display = windowManager.getDefaultDisplay()) != null) {
+            displayMetrics = new DisplayMetrics();
+            display.getMetrics(displayMetrics);
+        } else {
+            displayMetrics = null;
+        }
+
+        // Check for locale.
+        Locale localeObject;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            localeObject = context.getResources().getConfiguration().getLocales().get(0);
+        } else {
+            localeObject = context.getResources().getConfiguration().locale;
+        }
+        if (localeObject != null) {
+            locale = Util.getLocaleString(localeObject);
+        } else {
+            locale = DEFAULT_LOCALE;
+        }
+
+        // Check for app version and package.
+        appPackage = context.getPackageName();
+        try {
+            PackageInfo info = context.getPackageManager().getPackageInfo(appPackage, 0);
+            appVersion = info.versionName;
+        } catch (PackageManager.NameNotFoundException ignore) {
+            // Can't happen.
+        }
+
+        lastSyncTimeMillis = System.currentTimeMillis();
     }
 
     /**
@@ -61,7 +129,8 @@ public class BranchDeviceInfo {
      * @return A value containing the hardware manufacturer of the current device.
      * @see <a href="http://developer.android.com/reference/android/os/Build.html#MANUFACTURER">Build.MANUFACTURER</a>
      */
-    private static String getBrand() {
+    @NonNull
+    private String getBrand() {
         return android.os.Build.MANUFACTURER;
     }
 
@@ -71,15 +140,24 @@ public class BranchDeviceInfo {
      * @return A value containing the hardware model of the current device.
      * @see <a href="http://developer.android.com/reference/android/os/Build.html#MODEL">Build.MODEL</a>
      */
-    private static String getModel() {
+    @NonNull
+    private String getModel() {
         return android.os.Build.MODEL;
     }
 
-    private static String getLocale() {
-        if (_locale != null) {
-            return Util.getLocaleString(_locale);
-        }
-        return "en-US";
+    @NonNull
+    private String getLocale() {
+        return locale;
+    }
+
+    @Nullable
+    private String getAppPackage() {
+        return appPackage;
+    }
+
+    @Nullable
+    private String getAppVersion() {
+        return appVersion;
     }
 
     /**
@@ -99,7 +177,7 @@ public class BranchDeviceInfo {
      * current device.
      * @see <a href="http://developer.android.com/guide/topics/manifest/uses-sdk-element.html#ApiLevels">Android Developers - API Level and Platform Version</a>
      */
-    private static int getOSVersion() {
+    private int getOSVersion() {
         return android.os.Build.VERSION.SDK_INT;
     }
 
@@ -109,49 +187,31 @@ public class BranchDeviceInfo {
      * @return A value containing the name of current registered operator.
      * @see <a href="https://developer.android.com/reference/android/telephony/TelephonyManager.html#getNetworkOperatorName()">Carrier</a>
      */
-    private static String getCarrier() {
-        return _carrierName;
-    }
-
-    private static void initCarrierCheck(Context context) {
-
-        try {
-            if (context != null) {
-                TelephonyManager manager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-                _carrierName = manager.getNetworkOperatorName();
-            }
-        } catch (Exception e) {
-        }
-
-        if (TextUtils.isEmpty(_carrierName)) {
-            _carrierName = UNKNOWN_CARRIER;
-        }
-    }
-
-    private static void initDisplayMetrics(Context context) {
-        _displayMetrics = new DisplayMetrics();
-        if (context != null) {
-            WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-            if (windowManager != null) {
-                Display display = windowManager.getDefaultDisplay();
-                display.getMetrics(_displayMetrics);
-            }
-        }
-    }
-
-    private static void initLocale(Context context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
-            _locale = context.getResources().getConfiguration().getLocales().get(0);
-        } else{
-            //noinspection deprecation
-            _locale = context.getResources().getConfiguration().locale;
-        }
+    @NonNull
+    private String getCarrier() {
+        return carrierName;
     }
 
     /**
      * Add Device Information to a JSON object.
      */
-    public static void addDeviceInfo(JSONObject jsonObject) {
+    void addDeviceInfo(@NonNull JSONObject jsonObject) {
+        // Anytime we're being used, see if we should re-sync.
+        // Synchronize just in case someone fires requests from different threads at once.
+        synchronized (syncLock) {
+            long now = System.currentTimeMillis();
+            if (now > lastSyncTimeMillis + SYNC_TIME_MILLIS) {
+                BranchSearch search = BranchSearch.getInstance();
+                if (search != null) {
+                    sync(search.getApplicationContext());
+                } else {
+                    // Object being used but BranchSearch not initialized.
+                    // This can happen in tests. Ignore.
+                }
+            }
+        }
+
+        // Write.
         addDeviceInfo(jsonObject, JSONKey.Brand.toString(), getBrand());
         addDeviceInfo(jsonObject, JSONKey.Carrier.toString(), getCarrier());
         addDeviceInfo(jsonObject, JSONKey.Locale.toString(), getLocale());
@@ -160,18 +220,27 @@ public class BranchDeviceInfo {
         addDeviceInfo(jsonObject, JSONKey.OS.toString(), "ANDROID");
         addDeviceInfo(jsonObject, JSONKey.SDK.toString(), "discovery_android");
         addDeviceInfo(jsonObject, JSONKey.SDKVersion.toString(), BranchSearch.getVersion());
-
-        if (_displayMetrics != null) {
-            addDeviceInfo(jsonObject, JSONKey.ScreenDpi.toString(), _displayMetrics.densityDpi);
-            addDeviceInfo(jsonObject, JSONKey.ScreenWidth.toString(), _displayMetrics.widthPixels);
-            addDeviceInfo(jsonObject, JSONKey.ScreenHeight.toString(), _displayMetrics.heightPixels);
+        if (displayMetrics != null) {
+            addDeviceInfo(jsonObject, JSONKey.ScreenDpi.toString(), displayMetrics.densityDpi);
+            addDeviceInfo(jsonObject, JSONKey.ScreenWidth.toString(), displayMetrics.widthPixels);
+            addDeviceInfo(jsonObject, JSONKey.ScreenHeight.toString(), displayMetrics.heightPixels);
+        }
+        String appPackage = getAppPackage();
+        String appVersion = getAppVersion();
+        if (appPackage != null) {
+            addDeviceInfo(jsonObject, JSONKey.AppPackage.toString(), appPackage);
+        }
+        if (appVersion != null) {
+            addDeviceInfo(jsonObject, JSONKey.AppVersion.toString(), appVersion);
         }
     }
 
-    private static <T> void addDeviceInfo(JSONObject jsonObject, String key, T value) {
+    private static <T> void addDeviceInfo(@NonNull JSONObject jsonObject,
+                                          @NonNull String key,
+                                          @Nullable T value) {
         try {
             jsonObject.put(key, value);
-        } catch (JSONException e) {
+        } catch (JSONException ignore) {
         }
     }
 }

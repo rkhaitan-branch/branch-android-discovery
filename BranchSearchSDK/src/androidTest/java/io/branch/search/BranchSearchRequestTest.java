@@ -29,13 +29,14 @@ public class BranchSearchRequestTest {
         requestIn.disableQueryModification();
         requestIn.setQuerySource(BranchQuerySource.QUERY_HINT_RESULTS);
 
+        BranchDeviceInfo info = new BranchDeviceInfo();
         BranchConfiguration config = new BranchConfiguration();
 
-        config.setBranchKey("123");
+        config.setBranchKey("key_live_123"); // need a "valid" key
         config.setCountryCode("ZZ");
         config.setGoogleAdID("XYZ");
 
-        JSONObject jsonIn = BranchSearchInterface.createPayload(requestIn, config);
+        JSONObject jsonIn = BranchSearchInterface.createPayload(requestIn, config, info);
         Log.d("Branch", "SearchRequest::testRequestCreation(): " + jsonIn.toString());
 
         Assert.assertEquals(100,
@@ -49,7 +50,7 @@ public class BranchSearchRequestTest {
         Assert.assertEquals(10, jsonIn.getInt(BranchDiscoveryRequest.JSONKey.Latitude.toString()));
         Assert.assertEquals(20, jsonIn.getInt(BranchDiscoveryRequest.JSONKey.Longitude.toString()));
 
-        Assert.assertEquals("123", jsonIn.getString(BranchConfiguration.JSONKey.BranchKey.toString()));
+        Assert.assertEquals("key_live_123", jsonIn.getString(BranchConfiguration.JSONKey.BranchKey.toString()));
         Assert.assertEquals("ZZ", jsonIn.getString(BranchConfiguration.JSONKey.Country.toString()));
         Assert.assertEquals("XYZ", jsonIn.getString(BranchConfiguration.JSONKey.GAID.toString()));
         Assert.assertFalse(TextUtils.isEmpty(jsonIn.getString(BranchConfiguration.JSONKey.Locale.toString())));
@@ -60,7 +61,8 @@ public class BranchSearchRequestTest {
     @Test
     public void testHasDeviceInfo() throws Throwable {
         BranchSearchRequest request = BranchSearchRequest.Create("MOD Pizza");
-        JSONObject jsonOut = BranchSearchInterface.createPayload(request, new BranchConfiguration());
+        JSONObject jsonOut = BranchSearchInterface.createPayload(request,
+                new BranchConfiguration(), new BranchDeviceInfo());
 
         Assert.assertNotNull(jsonOut.getString(BranchDeviceInfo.JSONKey.Brand.toString()));
         Assert.assertNotNull(jsonOut.getString(BranchDeviceInfo.JSONKey.Model.toString()));
@@ -73,7 +75,8 @@ public class BranchSearchRequestTest {
         final String MODIFY_KEY = "do_not_modify";
 
         BranchSearchRequest request = BranchSearchRequest.Create("MOD Pizza");
-        JSONObject jsonOut = BranchSearchInterface.createPayload(request, new BranchConfiguration());
+        JSONObject jsonOut = BranchSearchInterface.createPayload(request,
+                new BranchConfiguration(), new BranchDeviceInfo());
 
         // Per Spec:  The field should not be sent if false.
         try {
@@ -87,7 +90,8 @@ public class BranchSearchRequestTest {
 
         // "Disable" query modifications.  The key should now exist.
         request.disableQueryModification();
-        jsonOut = BranchSearchInterface.createPayload(request, new BranchConfiguration());
+        jsonOut = BranchSearchInterface.createPayload(request,
+                new BranchConfiguration(), new BranchDeviceInfo());
         Assert.assertTrue(jsonOut.getBoolean(MODIFY_KEY));
     }
 
@@ -95,34 +99,36 @@ public class BranchSearchRequestTest {
     public void testSetExtra() {
         BranchSearchRequest request = BranchSearchRequest.Create("Pizza");
         BranchConfiguration configuration = new BranchConfiguration();
+        BranchDeviceInfo info = new BranchDeviceInfo();
         JSONObject json;
 
         // If no extra is present, json should not even have the extra key.
-        json = BranchSearchInterface.createPayload(request, configuration);
+        json = BranchSearchInterface.createPayload(request, configuration, info);
         Assert.assertFalse(json.has(BranchDiscoveryRequest.JSONKey.Extra.toString()));
 
         // If some extra is present, it will be inside a child json object.
         request.setExtra("theme", "dark");
-        json = BranchSearchInterface.createPayload(request, configuration);
+        json = BranchSearchInterface.createPayload(request, configuration, info);
         JSONObject extra = json.optJSONObject(BranchDiscoveryRequest.JSONKey.Extra.toString());
         Assert.assertNotNull(extra);
         Assert.assertEquals("dark", extra.optString("theme"));
 
         // If null is passed, the object is cleared.
         request.setExtra("theme", null);
-        json = BranchSearchInterface.createPayload(request, configuration);
+        json = BranchSearchInterface.createPayload(request, configuration, info);
         Assert.assertFalse(json.has(BranchDiscoveryRequest.JSONKey.Extra.toString()));
     }
 
     @Test
     public void testSetExtra_overridesConfiguration() {
+        BranchDeviceInfo info = new BranchDeviceInfo();
         BranchConfiguration configuration = new BranchConfiguration();
         configuration.addRequestExtra("theme", "light");
         configuration.addRequestExtra("size", "small");
 
         BranchSearchRequest request = BranchSearchRequest.Create("Pizza");
         request.setExtra("theme", "dark");
-        JSONObject json = BranchSearchInterface.createPayload(request, configuration);
+        JSONObject json = BranchSearchInterface.createPayload(request, configuration, info);
         JSONObject extra = json.optJSONObject(BranchDiscoveryRequest.JSONKey.Extra.toString());
         Assert.assertNotNull(extra);
 
@@ -137,8 +143,9 @@ public class BranchSearchRequestTest {
 
         BranchSearchRequest request = BranchSearchRequest.Create("MOD Pizza");
         BranchConfiguration config = new BranchConfiguration();
+        BranchDeviceInfo info = new BranchDeviceInfo();
 
-        JSONObject jsonObject = BranchSearchInterface.createPayload(request, config);
+        JSONObject jsonObject = BranchSearchInterface.createPayload(request, config, info);
 
         String localeString = jsonObject.optString(BranchDeviceInfo.JSONKey.Locale.toString());
         Assert.assertFalse(TextUtils.isEmpty(localeString));
@@ -146,7 +153,7 @@ public class BranchSearchRequestTest {
 
         config.setLocale(new Locale("xx_YY"));
 
-        jsonObject = BranchSearchInterface.createPayload(request, config);
+        jsonObject = BranchSearchInterface.createPayload(request, config, info);
         Assert.assertEquals(testLocale.toLowerCase(), jsonObject.optString(BranchDeviceInfo.JSONKey.Locale.toString().toLowerCase()));
     }
 }

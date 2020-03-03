@@ -19,16 +19,15 @@ class BranchSearchInterface {
     @VisibleForTesting static URLConnectionNetworkHandler sRawHandler
             = URLConnectionNetworkHandler.initialize();
 
-    static boolean Search(final BranchSearchRequest request,
-                          final BranchConfiguration configuration,
+    static boolean search(final BranchSearchRequest request,
                           final IBranchSearchEvents callback) {
         final BranchSearch search = BranchSearch.getInstance();
         if (search == null) {
             return false;
         }
 
-        JSONObject jsonPayload = createPayload(request, configuration);
-
+        final BranchConfiguration configuration = search.getBranchConfiguration();
+        JSONObject jsonPayload = createPayload(request, configuration, search.getBranchDeviceInfo());
         search.getNetworkHandler(BranchSearch.Channel.SEARCH).executePost(configuration.getUrl(), jsonPayload, new IURLConnectionEvents() {
             @Override
             public void onResult(final @NonNull JSONObject response) {
@@ -62,16 +61,16 @@ class BranchSearchInterface {
         return true;
     }
 
-    static boolean AutoSuggest(final BranchSearchRequest request,
-                               final BranchConfiguration configuration,
+    static boolean autoSuggest(final BranchSearchRequest request,
                                final IBranchQueryResults callback) {
         BranchSearch search = BranchSearch.getInstance();
         if (search == null) {
             return false;
         }
 
-        JSONObject jsonPayload = createPayload(request, configuration);
-
+        JSONObject jsonPayload = createPayload(request,
+                search.getBranchConfiguration(),
+                search.getBranchDeviceInfo());
         search.getNetworkHandler(BranchSearch.Channel.AUTOSUGGEST).executePost(BRANCH_AUTOSUGGEST_URL, jsonPayload, new IURLConnectionEvents() {
             @Override
             public void onResult(@NonNull JSONObject response) {
@@ -90,16 +89,16 @@ class BranchSearchInterface {
     }
 
 
-    static boolean QueryHint(final BranchQueryHintRequest request,
-                             final BranchConfiguration configuration,
+    static boolean queryHint(final BranchQueryHintRequest request,
                              final IBranchQueryResults callback) {
         BranchSearch search = BranchSearch.getInstance();
         if (search == null) {
             return false;
         }
 
-        JSONObject jsonPayload = createPayload(request, configuration);
-
+        JSONObject jsonPayload = createPayload(request,
+                search.getBranchConfiguration(),
+                search.getBranchDeviceInfo());
         search.getNetworkHandler(BranchSearch.Channel.QUERYHINT).executePost(BRANCH_QUERYHINT_URL, jsonPayload, new IURLConnectionEvents() {
             @Override
             public void onResult(@NonNull JSONObject response) {
@@ -137,17 +136,23 @@ class BranchSearchInterface {
         });
     }
 
-    static JSONObject createPayload(BranchSearchRequest request, BranchConfiguration configuration) {
+    @NonNull
+    static JSONObject createPayload(@NonNull BranchSearchRequest request,
+                                    @NonNull BranchConfiguration configuration,
+                                    @NonNull BranchDeviceInfo info) {
         JSONObject jsonPayload = request.convertToJson();
-        BranchDeviceInfo.addDeviceInfo(jsonPayload);
+        info.addDeviceInfo(jsonPayload);
         configuration.addConfigurationInfo(jsonPayload);
 
         return jsonPayload;
     }
 
-    static JSONObject createPayload(BranchQueryHintRequest request, BranchConfiguration configuration) {
+    @NonNull
+    static JSONObject createPayload(@NonNull BranchQueryHintRequest request,
+                                    @NonNull BranchConfiguration configuration,
+                                    @NonNull BranchDeviceInfo info) {
         JSONObject jsonPayload = request.convertToJson();
-        BranchDeviceInfo.addDeviceInfo(jsonPayload);
+        info.addDeviceInfo(jsonPayload);
         configuration.addConfigurationInfo(jsonPayload);
 
         return jsonPayload;

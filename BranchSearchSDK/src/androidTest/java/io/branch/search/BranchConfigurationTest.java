@@ -23,7 +23,7 @@ public class BranchConfigurationTest extends BranchTest {
         Assert.assertNull(config.getCountryCode());
         Assert.assertNull(config.getUrl());
 
-        config.setDefaults(getTestContext());
+        config.sync(getTestContext());
 
         // After Initialization, everything should be set
         Assert.assertNotNull(config.getBranchKey());

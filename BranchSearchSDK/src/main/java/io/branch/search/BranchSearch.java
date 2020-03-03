@@ -3,17 +3,12 @@ package io.branch.search;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 
-import com.google.android.gms.ads.identifier.AdvertisingIdClient;
-
-import java.lang.ref.WeakReference;
-
 /**
- * Main entry class for Branch Discovery. This class need to initialized before accessing any Branch
+ * Main entry class for Branch Discovery. This class need to be initialized before accessing any Branch
  * discovery functionality.
  *
  * Note that Branch Discovery needs location permission for better discovery experience. Please make sure
@@ -31,12 +26,8 @@ public class BranchSearch {
             = new URLConnectionNetworkHandler[Channel.values().length];
 
     private BranchConfiguration branchConfiguration;
+    private BranchDeviceInfo branchDeviceInfo;
     private Context appContext;
-
-
-    // Private Constructor.
-    private BranchSearch() {
-    }
 
     /**
      * Initialize the BranchSearch SDK with the default configuration options.
@@ -54,18 +45,20 @@ public class BranchSearch {
      * @return this BranchSearch instance.
      */
     public static BranchSearch init(@NonNull Context context, @NonNull BranchConfiguration config) {
-        thisInstance = new BranchSearch();
-        thisInstance.initialize(context, config);
+        thisInstance = new BranchSearch(context, config, new BranchDeviceInfo());
 
-        // Initialize Device Information that doesn't change
-        BranchDeviceInfo.init(context);
+        // Initialize BranchSearch objects.
+        thisInstance.branchDeviceInfo.sync(thisInstance.getApplicationContext());
+        thisInstance.branchConfiguration.sync(thisInstance.getApplicationContext());
 
         // Ensure that there is a valid key
-        if (!thisInstance.branchConfiguration.hasValidKey()) {
+        // TODO dev gave us a bad key. why would we return null here (making getInstance() nullable
+        //  and crashing later in unexpected ways) instead of crashing with a clear message?
+        //  We need a key to work! Our code would also be more elegant since we could crash in config.sync().
+        if (!config.hasValidKey()) {
             Log.e(TAG, "Invalid Branch Key.");
             thisInstance = null;
         }
-
         return thisInstance;
     }
 
@@ -77,10 +70,24 @@ public class BranchSearch {
         return thisInstance;
     }
 
+    private BranchSearch(@NonNull Context context,
+                         @NonNull BranchConfiguration config,
+                         @NonNull BranchDeviceInfo info) {
+        this.appContext = context.getApplicationContext();
+        this.branchConfiguration = config;
+        this.branchDeviceInfo = info;
+
+        // We need a network handler for each protocol.
+        for (Channel channel : Channel.values()) {
+            this.networkHandlers[channel.ordinal()] = URLConnectionNetworkHandler.initialize();
+        }
+    }
+
     /**
      * Get the BranchSearch Version.
      * @return this BranchSearch Build version
      */
+    @NonNull
     public static String getVersion() {
         return BuildConfig.VERSION_NAME;
     }
@@ -92,7 +99,7 @@ public class BranchSearch {
      * @return true if the request was posted
      */
     public boolean query(BranchSearchRequest request, IBranchSearchEvents callback) {
-        return BranchSearchInterface.Search(request, branchConfiguration, callback);
+        return BranchSearchInterface.search(request, callback);
     }
 
     /**
@@ -100,8 +107,9 @@ public class BranchSearch {
      * @param callback {@link IBranchQueryResults} Callback to receive results.
      * @return true if the request was posted.
      */
+    @SuppressWarnings("UnusedReturnValue")
     public boolean queryHint(final IBranchQueryResults callback) {
-        return BranchSearchInterface.QueryHint(new BranchQueryHintRequest(), branchConfiguration, callback);
+        return BranchSearchInterface.queryHint(new BranchQueryHintRequest(), callback);
     }
 
     /**
@@ -111,8 +119,9 @@ public class BranchSearch {
      * @param callback {@link IBranchQueryResults} Callback to receive results.
      * @return true if the request was posted.
      */
+    @SuppressWarnings("UnusedReturnValue")
     public boolean autoSuggest(BranchSearchRequest request, final IBranchQueryResults callback) {
-        return BranchSearchInterface.AutoSuggest(request, branchConfiguration, callback);
+        return BranchSearchInterface.autoSuggest(request, callback);
     }
 
     // Package Private
@@ -120,22 +129,17 @@ public class BranchSearch {
         return this.networkHandlers[channel.ordinal()];
     }
 
-    private void initialize(@NonNull Context context, final BranchConfiguration config) {
-        new getGAIDTask(context).execute();
-
-        // We need a network handler for each protocol.
-        for (Channel channel : Channel.values()) {
-            this.networkHandlers[channel.ordinal()] = URLConnectionNetworkHandler.initialize();
-        }
-
-        this.branchConfiguration = (config == null ? new BranchConfiguration() : config);
-        this.branchConfiguration.setDefaults(context);
-        this.appContext = context.getApplicationContext();
-    }
-
     // Undocumented
+    // TODO This should not be public! Once the user creates a configuration and initializes
+    //  the SDK, he should not be able to change the configuration values while we're running, or
+    //  our behavior might change/break/be undefined.
     public final BranchConfiguration getBranchConfiguration() {
         return branchConfiguration;
+    }
+
+    @NonNull
+    BranchDeviceInfo getBranchDeviceInfo() {
+        return branchDeviceInfo;
     }
 
     /**
@@ -176,35 +180,6 @@ public class BranchSearch {
     public static void isServiceEnabled(@NonNull String branchKey,
                                         @NonNull IBranchServiceEnabledEvents callback) {
         BranchSearchInterface.ServiceEnabled(branchKey, callback);
-    }
-
-    /**
-     * Note that this is the only place where the dependency for play-services-ads is needed.
-     */
-    private static class getGAIDTask extends AsyncTask<Void, Void, Void> {
-        private final WeakReference<Context> mContextReference;
-
-        getGAIDTask(Context context) {
-            mContextReference = new WeakReference<>(context);
-        }
-
-        @Override
-        protected Void doInBackground(Void... unused) {
-            try {
-                Context context = mContextReference.get();
-                if (context != null) {
-                    AdvertisingIdClient.Info adInfo = AdvertisingIdClient.getAdvertisingIdInfo(context);
-                    getInstance().branchConfiguration.setGoogleAdID(adInfo != null
-                            ? adInfo.getId() : null);
-                    getInstance().branchConfiguration.limitAdTracking(adInfo != null
-                            && adInfo.isLimitAdTrackingEnabled());
-                }
-            } catch (Exception ignore) {
-            } catch (NoClassDefFoundError ignore) {
-                // This is thrown if no gms base library is on our classpath, ignore it
-            }
-            return null;
-        }
     }
 
     @NonNull
