@@ -88,13 +88,13 @@ class BranchDeviceInfo {
         }
 
         // Check for display metrics.
+        // Apparently the display can be null in some cases.
         WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        if (windowManager != null) {
+        Display display;
+        if (windowManager != null && (display = windowManager.getDefaultDisplay()) != null) {
             displayMetrics = new DisplayMetrics();
-            Display display = windowManager.getDefaultDisplay();
             display.getMetrics(displayMetrics);
         } else {
-            // Not sure how this could ever happen.
             displayMetrics = null;
         }
 
