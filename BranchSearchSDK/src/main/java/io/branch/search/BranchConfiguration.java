@@ -268,6 +268,9 @@ public class BranchConfiguration {
             protected Void doInBackground(Void... voids) {
                 try {
                     BranchSearch search = BranchSearch.getInstance();
+                    if (search == null) {
+                        return null;
+                    }
                     Context context = search.getApplicationContext();
                     BranchConfiguration config = search.getBranchConfiguration();
                     AdvertisingIdClient.Info adInfo = AdvertisingIdClient.getAdvertisingIdInfo(context);
