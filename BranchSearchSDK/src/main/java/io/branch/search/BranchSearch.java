@@ -105,7 +105,7 @@ public class BranchSearch {
      * @return true if the request was posted
      */
     public boolean query(BranchSearchRequest request, IBranchSearchEvents callback) {
-        return BranchSearchInterface.Search(request, callback);
+        return BranchSearchInterface.search(request, callback);
     }
 
     /**
@@ -115,7 +115,7 @@ public class BranchSearch {
      */
     @SuppressWarnings("UnusedReturnValue")
     public boolean queryHint(final IBranchQueryResults callback) {
-        return BranchSearchInterface.QueryHint(new BranchQueryHintRequest(), callback);
+        return BranchSearchInterface.queryHint(new BranchQueryHintRequest(), callback);
     }
 
     /**
@@ -127,7 +127,7 @@ public class BranchSearch {
      */
     @SuppressWarnings("UnusedReturnValue")
     public boolean autoSuggest(BranchSearchRequest request, final IBranchQueryResults callback) {
-        return BranchSearchInterface.AutoSuggest(request, callback);
+        return BranchSearchInterface.autoSuggest(request, callback);
     }
 
     // Package Private

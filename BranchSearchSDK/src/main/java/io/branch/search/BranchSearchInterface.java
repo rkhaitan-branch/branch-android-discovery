@@ -19,7 +19,7 @@ class BranchSearchInterface {
     @VisibleForTesting static URLConnectionNetworkHandler sRawHandler
             = URLConnectionNetworkHandler.initialize();
 
-    static boolean Search(final BranchSearchRequest request,
+    static boolean search(final BranchSearchRequest request,
                           final IBranchSearchEvents callback) {
         final BranchSearch search = BranchSearch.getInstance();
         if (search == null) {
@@ -63,7 +63,7 @@ class BranchSearchInterface {
         return true;
     }
 
-    static boolean AutoSuggest(final BranchSearchRequest request,
+    static boolean autoSuggest(final BranchSearchRequest request,
                                final IBranchQueryResults callback) {
         BranchSearch search = BranchSearch.getInstance();
         if (search == null) {
@@ -92,7 +92,7 @@ class BranchSearchInterface {
     }
 
 
-    static boolean QueryHint(final BranchQueryHintRequest request,
+    static boolean queryHint(final BranchQueryHintRequest request,
                              final IBranchQueryResults callback) {
         BranchSearch search = BranchSearch.getInstance();
         if (search == null) {

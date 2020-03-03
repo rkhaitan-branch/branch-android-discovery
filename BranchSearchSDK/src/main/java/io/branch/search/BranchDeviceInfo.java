@@ -99,16 +99,16 @@ class BranchDeviceInfo {
         }
 
         // Check for locale.
-        Locale locale;
+        Locale localeObject;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            locale = context.getResources().getConfiguration().getLocales().get(0);
+            localeObject = context.getResources().getConfiguration().getLocales().get(0);
         } else {
-            locale = context.getResources().getConfiguration().locale;
+            localeObject = context.getResources().getConfiguration().locale;
         }
-        if (locale != null) {
-            this.locale = Util.getLocaleString(locale);
+        if (localeObject != null) {
+            locale = Util.getLocaleString(localeObject);
         } else {
-            this.locale = DEFAULT_LOCALE;
+            locale = DEFAULT_LOCALE;
         }
 
         // Check for app version and package.

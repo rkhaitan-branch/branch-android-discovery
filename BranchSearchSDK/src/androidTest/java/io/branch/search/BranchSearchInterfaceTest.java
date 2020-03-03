@@ -58,7 +58,7 @@ public class BranchSearchInterfaceTest extends BranchTest {
 
         // Perform the request and ensure we have results.
         final CountDownLatch latch = new CountDownLatch(1);
-        BranchSearchInterface.Search(request, new IBranchSearchEvents() {
+        BranchSearchInterface.search(request, new IBranchSearchEvents() {
             @Override
             public void onBranchSearchResult(BranchSearchResult result) {
                 Assert.assertNotNull(result);
@@ -131,7 +131,7 @@ public class BranchSearchInterfaceTest extends BranchTest {
             @NonNull BranchSearchRequest request,
             @NonNull final BranchSearchError.ERR_CODE expected) throws Throwable {
         final CountDownLatch latch = new CountDownLatch(1);
-        BranchSearchInterface.Search(request, new IBranchSearchEvents() {
+        BranchSearchInterface.search(request, new IBranchSearchEvents() {
             @Override
             public void onBranchSearchResult(BranchSearchResult result) {
                 throw new RuntimeException("Should not happen.");
