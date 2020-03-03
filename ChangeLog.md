@@ -1,4 +1,8 @@
 # Branch Android SDK change log
+- v1.5.3
+  * _*Master Release*_ - March 2, 2020
+  * Improved detection of GAID and device information
+  
 - v1.5.2
   * _*Master Release*_ - February 27, 2020
   * Added a method to determine if a result is an ad
