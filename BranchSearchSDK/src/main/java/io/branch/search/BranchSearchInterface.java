@@ -27,9 +27,7 @@ class BranchSearchInterface {
         }
 
         final BranchConfiguration configuration = search.getBranchConfiguration();
-        final BranchDeviceInfo deviceInfo = search.getBranchDeviceInfo();
-        JSONObject jsonPayload = createPayload(request, configuration, deviceInfo);
-
+        JSONObject jsonPayload = createPayload(request, configuration, search.getBranchDeviceInfo());
         search.getNetworkHandler(BranchSearch.Channel.SEARCH).executePost(configuration.getUrl(), jsonPayload, new IURLConnectionEvents() {
             @Override
             public void onResult(final @NonNull JSONObject response) {
@@ -70,10 +68,9 @@ class BranchSearchInterface {
             return false;
         }
 
-        final BranchConfiguration configuration = search.getBranchConfiguration();
-        final BranchDeviceInfo deviceInfo = search.getBranchDeviceInfo();
-        JSONObject jsonPayload = createPayload(request, configuration, deviceInfo);
-
+        JSONObject jsonPayload = createPayload(request,
+                search.getBranchConfiguration(),
+                search.getBranchDeviceInfo());
         search.getNetworkHandler(BranchSearch.Channel.AUTOSUGGEST).executePost(BRANCH_AUTOSUGGEST_URL, jsonPayload, new IURLConnectionEvents() {
             @Override
             public void onResult(@NonNull JSONObject response) {
@@ -99,10 +96,9 @@ class BranchSearchInterface {
             return false;
         }
 
-        final BranchConfiguration configuration = search.getBranchConfiguration();
-        final BranchDeviceInfo deviceInfo = search.getBranchDeviceInfo();
-        JSONObject jsonPayload = createPayload(request, configuration, deviceInfo);
-
+        JSONObject jsonPayload = createPayload(request,
+                search.getBranchConfiguration(),
+                search.getBranchDeviceInfo());
         search.getNetworkHandler(BranchSearch.Channel.QUERYHINT).executePost(BRANCH_QUERYHINT_URL, jsonPayload, new IURLConnectionEvents() {
             @Override
             public void onResult(@NonNull JSONObject response) {
