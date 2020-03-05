@@ -3,7 +3,7 @@
 
 # Branch Discovery SDK
 
-The Branch Discovery SDK is an Android SDK provided by [Branch](https://branch.io) to power in-app search on Android devices. This SDK is a thin wrapper with helper classes to assist in building search user experiences on top of the Branch Discovery API. This SDK and API allow your users to search through the tens of billions of deep links to app pages that Branch has indexed from its core linking platform used by tens of thousands of mobile applications & websites.
+The Branch Discovery SDK is an Android SDK provided by [Branch](https://branch.io) to power in-app search on Android devices. This SDK is a thin wrapper with helper classes to assist in building search user experiences on top of the Branch Discovery API. This SDK and API allow your users to search through the tens of billions of deep links to app pages that Branch has indexed from its core linking platform used by tens of thousands of mobile applications.
 
 ![search example](http://neilbranch.github.io/imgs/demo_20191019.gif)
 
